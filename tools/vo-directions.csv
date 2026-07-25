@@ -1,0 +1,54 @@
+keys,speaker,direction
+ben.wake.day1,ben,"Flat. Not sarcastic yet — he still believes it, barely."
+ben.wake.tired,ben,Resigned. Half asleep.
+ben.errand.milk.start,ben,Genuine optimism. This is the last time he sounds hopeful.
+ben.errand.milk.arrive,ben,Deadpan. Reading the sign aloud.
+ben.errand.milk.queue,ben,Muttered under the breath. Nobody is meant to hear it.
+ben.errand.milk.done,ben,"Quiet relief. A small, real victory."
+ben.errand.paycheck.start,ben,Businesslike. Ticking a box.
+ben.errand.paycheck.queue,ben,Counting out loud. Rising disbelief on the second 'two tellers'.
+ben.errand.paycheck.form,ben,Flat delivery — the joke is the logic, don't push it.
+ben.errand.paycheck.done,ben,"Emphasis on 'person'. He is keeping score."
+ben.errand.new,ben,Weary. Not surprised.
+ben.errand.all_done,ben,Exhaled. Almost happy.
+ben.queue.wait_short,ben,One clipped syllable.
+ben.queue.wait_long,ben,Slow. Bored to the point of philosophy.
+ben.queue.cut,ben,Fake politeness over real contempt.
+ben.petition.refuse,ben,Firm. He has had this conversation before.
+ben.hoa.encounter,ben,Incredulous. Land on 'ruler' both times.
+ben.influencer.encounter,ben,"Escalating. Starts tired, ends genuinely rattled."
+ben.support.hold,ben,Dead flat. Reciting.
+ben.terms.accept,ben,Two sentences. Second one faster and quieter.
+ben.combat.first_blood,ben,"Shaken. This is the tonal pivot of the whole game — play it real, not funny."
+ben.combat.melee_hit,ben,Reflex apology then instant correction.
+ben.combat.gun_draw,ben,Addressing an imaginary court.
+ben.combat.reload,ben,Shouted to a room.
+ben.combat.outnumbered,ben,Genuinely social anxiety more than fear.
+ben.combat.low_health,ben,Winded. Short breaths.
+ben.combat.kill_regret,ben,"Quiet. No comedy timing at all — let it sit."
+ben.pacifist.praise,ben,Proud. He earned this one.
+ben.pacifist.tempted,ben,Talking himself down. Urgent whisper.
+ben.police.spotted,ben,Charming. Hands visible.
+ben.police.chase,ben,Shouted while sprinting — record out of breath.
+ben.police.escaped,ben,Panting. Self-aware.
+ben.police.arrested,ben,Defeated but not unhappy.
+ben.taunt.generic,ben,Goading. Chin up.
+ben.taunt.crowd,ben,Big. Carnival barker.
+ben.hurt.light,ben,Single sharp intake.
+ben.hurt.heavy,ben,Grunt with words attached.
+ben.death,ben,Fading. The joke costs him everything and he tells it anyway.
+ben.home.arrive,ben,Three beats. Each one a door closing.
+ben.home.sleep,ben,Almost asleep. Ends the day.
+npc.civilian.greet,civilian,Neutral passer-by. Record several variations.
+npc.civilian.annoyed,civilian,Clipped. Mild.
+npc.civilian.scared,civilian,Real panic. Two takes — one male-ish one female-ish pitch if possible.
+npc.civilian.flee,civilian,Shouted while running.
+npc.civilian.gossip,civilian,Conversational. Half-volume — this plays as ambience.
+npc.clerk.next,clerk,Bored. Projected across a room.
+npc.clerk.closed,clerk,Not sorry.
+npc.clerk.form,clerk,Helpful in the worst possible way.
+npc.hoa.warning,hoa,Smug. Enjoying this.
+npc.influencer.pitch,influencer,Loud. Performing to a phone.
+npc.police.halt,police,Command voice.
+npc.police.warning,police,Command voice. Slight edge of hoping it works.
+npc.police.pursue,police,Radio call. Shouted to a partner.

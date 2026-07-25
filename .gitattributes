@@ -1,0 +1,23 @@
+# Normalize line endings on commit, check out native.
+* text=auto
+
+*.cs        text diff=csharp
+*.md        text
+*.csv       text
+*.json      text
+*.yml       text
+*.ps1       text eol=crlf
+
+# Godot scene and resource files are text, but they merge badly.
+# Keep scene changes to one file per PR where you can.
+*.tscn      text
+*.tres      text
+*.godot     text
+*.import    text
+
+*.png       binary
+*.jpg       binary
+*.ogg       binary
+*.wav       binary
+*.glb       binary
+*.blend     binary

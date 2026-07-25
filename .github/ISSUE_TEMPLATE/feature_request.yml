@@ -1,0 +1,53 @@
+name: Feature / gameplay proposal
+description: Suggest a system, mechanic, errand, or obstruction
+labels: ["type: feature"]
+body:
+  - type: textarea
+    id: proposal
+    attributes:
+      label: The proposal
+      description: What should exist that doesn't?
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it fits
+      description: |
+        How does it serve the core loop? The game is about the gap between how long
+        errands should take and how long they do. Features that don't touch that gap
+        are a hard sell.
+    validations:
+      required: true
+
+  - type: textarea
+    id: pacifist
+    attributes:
+      label: The patient route through it
+      description: |
+        **Required for anything that obstructs the player.** Every obstruction must have
+        a non-violent solution. Describe it. "The player can kill him" is not one.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: sprint
+    attributes:
+      label: Which sprint does this belong to?
+      options:
+        - "S2 — The District"
+        - "S3 — People"
+        - "S4 — Consequences"
+        - "S5 — Ben"
+        - "S6 — The Week"
+        - "Post-release / unsure"
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: This needs new text or voice lines (FR + EN both required)
+        - label: This touches the satire boundary in GDD section 5
+        - label: I've read docs/GDD.md

@@ -1,0 +1,72 @@
+keys,en,fr
+ui.game.title,PostalBen,PostalBen
+ui.menu.new_game,New Week,Nouvelle semaine
+ui.menu.continue,Continue,Continuer
+ui.menu.settings,Settings,Options
+ui.menu.credits,Credits,Crédits
+ui.menu.quit,Quit,Quitter
+ui.menu.back,Back,Retour
+ui.settings.language,Language,Langue
+ui.settings.language.hint,Changes menus and subtitles. Voice-over follows if recorded.,Change les menus et les sous-titres. Les voix suivent si elles sont enregistrées.
+ui.settings.subtitles,Subtitles,Sous-titres
+ui.settings.subtitles.size,Subtitle size,Taille des sous-titres
+ui.settings.audio,Audio,Audio
+ui.settings.audio.master,Master,Général
+ui.settings.audio.voice,Voice,Voix
+ui.settings.audio.sfx,Effects,Effets
+ui.settings.audio.music,Music,Musique
+ui.settings.controls,Controls,Commandes
+ui.settings.sensitivity,Mouse sensitivity,Sensibilité souris
+ui.settings.invert_y,Invert vertical look,Inverser l'axe vertical
+ui.settings.gore,Gore level,Niveau de gore
+ui.settings.gore.full,Full,Complet
+ui.settings.gore.reduced,Reduced,Réduit
+ui.settings.gore.off,Off,Désactivé
+ui.hud.health,Health,Santé
+ui.hud.stamina,Stamina,Endurance
+ui.hud.ammo,Ammo,Munitions
+ui.hud.no_weapon,Bare hands,Mains nues
+ui.hud.wanted,Wanted,Recherché
+ui.hud.day,Day %d,Jour %d
+ui.hud.interact_prompt,[E] %s,[E] %s
+ui.errand.log_title,Errand List,Liste de courses
+ui.errand.empty,Nothing left. Go home.,Plus rien. Rentre.
+ui.errand.new,New errand,Nouvelle course
+ui.errand.done,Done,Fait
+ui.errand.optional,Optional,Facultatif
+ui.errand.day_complete,Errands done. Day over.,Courses finies. Journée terminée.
+ui.errand.milk.name,Get milk,Acheter du lait
+ui.errand.milk.desc,The shop is four blocks away. It is open. That is the whole task.,Le magasin est à quatre rues. Il est ouvert. C'est toute la mission.
+ui.errand.paycheck.name,Cash the paycheck,Encaisser la paie
+ui.errand.paycheck.desc,The bank closes at five. It always closes at five.,La banque ferme à dix-sept heures. Elle ferme toujours à dix-sept heures.
+ui.interact.door,Open,Ouvrir
+ui.interact.pickup,Pick up,Ramasser
+ui.interact.talk,Talk,Parler
+ui.interact.queue,Wait in line,Faire la queue
+ui.interact.pay,Pay,Payer
+ui.notoriety.calm,Nobody cares,Personne ne s'en soucie
+ui.notoriety.noticed,Someone noticed,Quelqu'un a remarqué
+ui.notoriety.reported,Police called,Police appelée
+ui.notoriety.hunted,Manhunt,Chasse à l'homme
+ui.pause.title,Paused,Pause
+ui.pause.resume,Resume,Reprendre
+ui.pause.save,Save,Sauvegarder
+ui.pause.abandon,Abandon day,Abandonner la journée
+ui.save.saved,Saved,Sauvegardé
+ui.save.slot,Slot %d,Emplacement %d
+ui.death.title,You died,Tu es mort
+ui.death.retry,Restart the day,Recommencer la journée
+ui.death.load,Load save,Charger
+ui.stats.title,Day report,Bilan de la journée
+ui.stats.errands,Errands completed,Courses effectuées
+ui.stats.people_killed,People killed,Personnes tuées
+ui.stats.pacifist,Pacifist run,Run pacifiste
+ui.stats.pacifist.yes,Yes — nobody died today.,Oui — personne n'est mort aujourd'hui.
+ui.stats.pacifist.no,No.,Non.
+ui.stats.time,Time taken,Temps écoulé
+ui.credits.role.creator,Created by,Créé par
+ui.credits.role.voice,Voice of Ben,Voix de Ben
+ui.credits.parody,"A parody. Not affiliated with, endorsed by, or containing any assets from Running With Scissors.","Une parodie. Sans affiliation, approbation ni aucun asset de Running With Scissors."
+ui.loading,Loading...,Chargement...
+ui.lang.en,English,Anglais
+ui.lang.fr,French,Français

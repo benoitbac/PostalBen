@@ -1,0 +1,72 @@
+name: Bug report
+description: Something in the game behaves incorrectly
+labels: ["type: bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. The two fields most people skip — **notoriety level** and
+        **pacifist run** — are the ones that most often explain the bug, so please fill them in.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you observed, and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Start Day 1
+        2. Enter the shop
+        3. ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: Game language
+      options: [English, Français, Both / switching between them]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: notoriety
+    attributes:
+      label: Notoriety level when it happened
+      options: [Calm, Noticed, Reported, Hunted, "Don't know"]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: pacifist
+    attributes:
+      label: Was this a pacifist run?
+      description: Had anyone died in this run before the bug?
+      options: ["Yes — nobody had died", "No", "Don't know"]
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      placeholder: "0.1.0 or a commit SHA"
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Platform
+      options: [Windows, Linux, macOS]
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console output
+      description: Any errors or warnings from the Godot output panel.
+      render: shell

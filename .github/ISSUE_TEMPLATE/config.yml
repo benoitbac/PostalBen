@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Design discussion
+    url: https://github.com/benoitbac/PostalBen/discussions
+    about: Questions about tone, scope, or direction — before opening a proposal.
+  - name: Game design document
+    url: https://github.com/benoitbac/PostalBen/blob/main/docs/GDD.md
+    about: The loop, the systems, and where the satire aims. Read before proposing features.
+  - name: Progress dashboard
+    url: https://benoitbac.github.io/PostalBen/
+    about: What's built, what's in progress, and voice-over recording coverage.

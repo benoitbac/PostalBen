@@ -1,0 +1,138 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  GODOT_VERSION: 4.7.1
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build:
+    name: Build & smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Cache Godot
+        id: godot-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/godot
+          key: godot-${{ env.GODOT_VERSION }}-mono-linux
+
+      - name: Install Godot (.NET build)
+        if: steps.godot-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot
+          base="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable"
+          curl -sSfL -o /tmp/godot.zip \
+            "$base/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64.zip"
+          unzip -q /tmp/godot.zip -d /tmp/godot-extract
+          mv /tmp/godot-extract/*/* ~/godot/
+          chmod +x ~/godot/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64
+
+      - name: Add Godot to PATH
+        run: |
+          ln -sf ~/godot/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64 ~/godot/godot
+          echo "$HOME/godot" >> "$GITHUB_PATH"
+
+      - name: Build C#
+        working-directory: game
+        run: dotnet build PostalBen.csproj --configuration Release
+
+      # Import compiles the localization CSVs into .translation resources. A failure
+      # here usually means a malformed CSV or a broken scene reference.
+      - name: Import assets
+        working-directory: game
+        run: |
+          godot --headless --import --quit-after 600 2>&1 | tee import.log
+          if grep -q '^ERROR:' import.log; then
+            echo "::error::Godot reported import errors"
+            grep '^ERROR:' import.log
+            exit 1
+          fi
+
+      # Boots the real scene tree: autoloads resolve, locale is applied, Day 1 loads
+      # and registers its errands. Catches broken autoload wiring that compiles fine.
+      - name: Smoke test (headless boot)
+        working-directory: game
+        run: godot --headless --quit-after 120
+
+  localization:
+    name: Localization integrity
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Every VO key must exist in both languages, and every key needs a direction
+      # entry -- otherwise it silently never gets recorded.
+      - name: Check translation completeness
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $problems = @()
+
+          foreach ($file in 'game/localization/ui.csv', 'game/localization/vo.csv') {
+              $rows = Import-Csv $file -Encoding UTF8
+              foreach ($row in $rows) {
+                  foreach ($loc in 'en', 'fr') {
+                      if ([string]::IsNullOrWhiteSpace($row.$loc)) {
+                          $problems += "$file : '$($row.keys)' is missing a '$loc' translation"
+                      }
+                  }
+              }
+              $dupes = $rows | Group-Object keys | Where-Object Count -gt 1
+              foreach ($d in $dupes) { $problems += "$file : duplicate key '$($d.Name)'" }
+          }
+
+          $vo = Import-Csv 'game/localization/vo.csv' -Encoding UTF8
+          $dir = @{}
+          Import-Csv 'tools/vo-directions.csv' -Encoding UTF8 | ForEach-Object { $dir[$_.keys] = $true }
+          foreach ($row in $vo) {
+              if (-not $dir.ContainsKey($row.keys)) {
+                  $problems += "tools/vo-directions.csv : no speaker/direction for '$($row.keys)'"
+              }
+          }
+
+          if ($problems.Count -gt 0) {
+              $problems | ForEach-Object { Write-Host "::error::$_" }
+              exit 1
+          }
+          Write-Host "All keys complete in en + fr, no duplicates, all directions present."
+
+      - name: Regenerate VO sheet
+        shell: pwsh
+        run: ./tools/Build-VoSheet.ps1
+
+      # The sheet is generated from the CSVs, so a stale committed copy means someone
+      # edited a line without re-running the generator.
+      - name: Check VO sheet is current
+        shell: pwsh
+        run: |
+          $diff = git diff --name-only -- docs/VO_SCRIPT.md
+          if ($diff) {
+              Write-Host "::error::docs/VO_SCRIPT.md is stale. Run: pwsh tools/Build-VoSheet.ps1"
+              git diff -- docs/VO_SCRIPT.md
+              exit 1
+          }
+          Write-Host "VO script is up to date."
+
+      - name: Compute VO coverage
+        shell: pwsh
+        run: ./tools/Get-VoCoverage.ps1
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: vo-coverage
+          path: dashboard/vo-coverage.json

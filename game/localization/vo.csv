@@ -1,0 +1,54 @@
+keys,en,fr
+ben.wake.day1,Another beautiful day in the neighbourhood.,Encore une belle journée dans le quartier.
+ben.wake.tired,The list is on the fridge. The list is always on the fridge.,La liste est sur le frigo. La liste est toujours sur le frigo.
+ben.errand.milk.start,Milk. One item. How long can that take.,Du lait. Un article. Ça peut prendre combien de temps.
+ben.errand.milk.arrive,"Open until eight, it says. It's been closed since Tuesday.","Ouvert jusqu'à vingt heures, qu'ils disent. C'est fermé depuis mardi."
+ben.errand.milk.queue,I'm going to age out of the demographic in this queue.,Je vais changer de tranche d'âge dans cette file.
+ben.errand.milk.done,Milk. Acquired. Nobody had to die.,Du lait. Acquis. Personne n'a eu à mourir.
+ben.errand.paycheck.start,Bank. Cash the cheque. Home before five.,La banque. Encaisser le chèque. Rentré avant cinq heures.
+ben.errand.paycheck.queue,There are two tellers. Nine windows. Two tellers.,Il y a deux guichetiers. Neuf guichets. Deux guichetiers.
+ben.errand.paycheck.form,"They need a form. To get the form, I need a form.","Il leur faut un formulaire. Pour avoir le formulaire, il me faut un formulaire."
+ben.errand.paycheck.done,Money. In hand. Still a person.,L'argent. En main. Toujours un être humain.
+ben.errand.new,That's new. That wasn't on the list.,Ça c'est nouveau. C'était pas sur la liste.
+ben.errand.all_done,That's the list. I can go home.,C'est toute la liste. Je peux rentrer.
+ben.queue.wait_short,Fine.,Bon.
+ben.queue.wait_long,I have been here long enough to have opinions about the carpet.,Je suis là depuis assez longtemps pour avoir un avis sur la moquette.
+ben.queue.cut,Sure. Go ahead. You were clearly born first.,Bien sûr. Vas-y. Tu es clairement né avant moi.
+ben.petition.refuse,I'm not signing it. I don't know what it is. That's why.,"Je ne signe pas. Je ne sais pas ce que c'est. C'est précisément pour ça."
+ben.hoa.encounter,"He measured my grass. With a ruler. He owns a ruler for this.","Il a mesuré ma pelouse. Au réglet. Il possède un réglet pour ça."
+ben.influencer.encounter,Please stop filming me. Please stop filming me while asking me to stop filming you.,Arrête de me filmer. Arrête de me filmer pendant que tu me demandes d'arrêter de te filmer.
+ben.support.hold,Your call is important to us. It is the eleventh most important thing to them.,Votre appel est important pour nous. C'est la onzième chose la plus importante pour eux.
+ben.terms.accept,I have read and agree to the terms. I have not read the terms.,J'ai lu et j'accepte les conditions. Je n'ai pas lu les conditions.
+ben.combat.first_blood,"Okay. That happened. That is a thing that happened now.","Bon. C'est arrivé. C'est une chose qui vient d'arriver."
+ben.combat.melee_hit,Sorry — no I'm not.,Désolé — non en fait.
+ben.combat.gun_draw,I'd like the record to show I tried the polite version first.,J'aimerais qu'il soit noté que j'ai d'abord essayé la version polie.
+ben.combat.reload,Reloading. Everyone hold still.,Je recharge. Que tout le monde reste tranquille.
+ben.combat.outnumbered,This is more people than I have ever spoken to voluntarily.,Ça fait plus de gens que je n'en ai jamais abordé volontairement.
+ben.combat.low_health,That's a lot of me on the outside.,Ça fait beaucoup de moi à l'extérieur.
+ben.combat.kill_regret,He had a name tag. I read it. That was a mistake.,Il avait un badge. Je l'ai lu. C'était une erreur.
+ben.pacifist.praise,Whole day. Nobody died. Put that on a plaque.,Toute une journée. Aucun mort. Mets ça sur une plaque.
+ben.pacifist.tempted,No. Put it down. Put it down.,Non. Repose ça. Repose ça.
+ben.police.spotted,Officer. Lovely afternoon for a misunderstanding.,Monsieur l'agent. Charmant après-midi pour un malentendu.
+ben.police.chase,I am cooperating! I'm just doing it at speed!,Je coopère ! Je le fais juste en courant !
+ben.police.escaped,"They lost me. In fairness, I lose me sometimes.","Ils m'ont perdu. Honnêtement, ça m'arrive aussi."
+ben.police.arrested,Fine. It's quieter in there anyway.,Bon. C'est plus calme là-dedans de toute façon.
+ben.taunt.generic,Go on. Say it again. Louder.,Vas-y. Répète. Plus fort.
+ben.taunt.crowd,Form a line! You'll all get a turn!,Faites la queue ! Vous y passerez tous !
+ben.hurt.light,Ow.,Aïe.
+ben.hurt.heavy,That one counted.,Celui-là comptait.
+ben.death,...the milk. Someone get the milk.,...le lait. Que quelqu'un prenne le lait.
+ben.home.arrive,Home. Door locked. Day survived.,À la maison. Porte fermée. Journée survécue.
+ben.home.sleep,Tomorrow the list will be longer. It's always longer.,Demain la liste sera plus longue. Elle est toujours plus longue.
+npc.civilian.greet,Morning.,Bonjour.
+npc.civilian.annoyed,Do you mind?,Ça vous dérange ?
+npc.civilian.scared,He's got something! He's got something!,Il a quelque chose ! Il a quelque chose !
+npc.civilian.flee,Move! Move!,Bougez ! Bougez !
+npc.civilian.gossip,I heard the shop's closed again.,Paraît que le magasin est encore fermé.
+npc.clerk.next,Next!,Suivant !
+npc.clerk.closed,"We're closed. Sign's right there.","C'est fermé. Le panneau est juste là."
+npc.clerk.form,You'll need to fill out the other form first.,Il faut d'abord remplir l'autre formulaire.
+npc.hoa.warning,That is four inches. Regulation is three.,Ça fait dix centimètres. Le règlement dit sept.
+npc.influencer.pitch,Guys — guys — say hi to the chat!,Les gars — les gars — dites bonjour au chat !
+npc.police.halt,Stop right there!,Arrêtez-vous !
+npc.police.warning,Put it down and nobody writes a report!,Posez ça et personne n'écrit de rapport !
+npc.police.pursue,He's heading for the alley!,Il file vers la ruelle !

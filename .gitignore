@@ -1,0 +1,25 @@
+# Godot
+.godot/
+/game/android/
+export_presets.cfg
+*.translation
+
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.idea/
+
+# Raw voice-over takes — large, lossless, and regenerable into assets/audio/vo
+audio-raw/
+
+# Build output
+/build/
+/export/
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store

@@ -1,0 +1,50 @@
+name: Localization / voice-over issue
+description: A translation is wrong, missing, or a voice line misbehaves
+labels: ["area: localization"]
+body:
+  - type: input
+    id: key
+    attributes:
+      label: Translation key
+      description: The key from ui.csv or vo.csv
+      placeholder: "ben.errand.milk.queue"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What's wrong
+      options:
+        - Translation is inaccurate
+        - Translation is missing
+        - Subtitle doesn't match the audio
+        - Subtitle timing is off (too fast / too slow)
+        - Wrong language plays
+        - Audio missing when it shouldn't be
+        - The joke doesn't land in this language
+    validations:
+      required: true
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language affected
+      options: [Français, English, Both]
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: Current text
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested
+    attributes:
+      label: Suggested text
+      description: |
+        French is a translation, not a transcription — match the rhythm and the joke,
+        not the word order. If you're changing where the punchline lands, say why.

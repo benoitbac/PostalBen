@@ -1,0 +1,120 @@
+{
+  "project": "PostalBen",
+  "tagline": "An open-world errand simulator where the list is mundane and the week is not.",
+  "updated": "2026-07-25",
+  "currentSprint": "S1",
+  "sprints": [
+    {
+      "id": "S1",
+      "name": "Foundations",
+      "nameFr": "Fondations",
+      "goal": "Engine, localization, audio and the core simulation systems.",
+      "goalFr": "Moteur, localisation, audio et systemes de simulation de base.",
+      "start": "2026-07-25",
+      "end": "2026-08-08",
+      "status": "active",
+      "items": [
+        { "title": "Godot 4.7.1 .NET project", "state": "done", "note": "Forward+, .NET 9, warnings-as-errors, full input map" },
+        { "title": "Locale manager (FR/EN)", "state": "done", "note": "OS detection, variant normalization, runtime switch" },
+        { "title": "Localized voice bank", "state": "done", "note": "Per-locale clips, EN fallback, subtitle-only fallback" },
+        { "title": "Audio mixer + ducking", "state": "done", "note": "5 buses, music ducks -12 dB under dialogue" },
+        { "title": "Subtitle layer", "state": "done", "note": "Speaker-coloured, reading-speed timing" },
+        { "title": "Translation data", "state": "done", "note": "78 UI keys + 53 VO lines, FR & EN complete" },
+        { "title": "Errand system", "state": "done", "note": "Data-driven stages, token completion, multi-route" },
+        { "title": "Notoriety system", "state": "done", "note": "4 levels, witnessed-only heat, time decay" },
+        { "title": "Day clock + save/load", "state": "done", "note": "08:00-22:00 at 40x, pacifist tracking" },
+        { "title": "Player controller", "state": "done", "note": "FP movement, stamina sprint, crouch w/ ceiling check" },
+        { "title": "Boot + Day 1 scenes", "state": "done", "note": "Boots headless, exit 0" },
+        { "title": "VO recording pipeline", "state": "done", "note": "Sheet gen, R128 normalizer, TTS placeholders, coverage" },
+        { "title": "Progress dashboard", "state": "active", "note": "This page" },
+        { "title": "Public repo + CI", "state": "active", "note": "Workflows, labels, templates, Pages" }
+      ]
+    },
+    {
+      "id": "S2",
+      "name": "The District",
+      "nameFr": "Le quartier",
+      "goal": "One walkable neighbourhood. Day 1 completable start to finish.",
+      "goalFr": "Un quartier parcourable. Jour 1 finissable de bout en bout.",
+      "start": "2026-08-08",
+      "end": "2026-08-29",
+      "status": "planned",
+      "items": [
+        { "title": "Blockout: house, shop, bank, park, streets", "state": "todo" },
+        { "title": "Interaction system (raycast + prompt)", "state": "todo" },
+        { "title": "Doors, pickups, tills, queue volumes", "state": "todo" },
+        { "title": "Wire Day 1 tokens to world objects", "state": "todo" },
+        { "title": "Errand log UI with markers", "state": "todo" }
+      ]
+    },
+    {
+      "id": "S3",
+      "name": "People",
+      "nameFr": "Les gens",
+      "goal": "NPCs with schedules, queues and reactions. The obstruction layer.",
+      "goalFr": "Des PNJ avec horaires, files d'attente et reactions. La couche d'obstruction.",
+      "start": "2026-08-29",
+      "end": "2026-09-26",
+      "status": "planned",
+      "items": [
+        { "title": "NPC base: navmesh, schedule, personal space", "state": "todo" },
+        { "title": "Queue behaviour", "state": "todo", "note": "The central obstruction mechanic" },
+        { "title": "Reaction states: neutral to fleeing", "state": "todo" },
+        { "title": "Witness reporting into notoriety", "state": "todo" },
+        { "title": "Ambient bark system", "state": "todo" }
+      ]
+    },
+    {
+      "id": "S4",
+      "name": "Consequences",
+      "nameFr": "Consequences",
+      "goal": "Police, pursuit, combat. Verify the pacifist path holds.",
+      "goalFr": "Police, poursuite, combat. Verifier que la voie pacifiste tient.",
+      "start": "2026-09-26",
+      "end": "2026-10-24",
+      "status": "planned",
+      "items": [
+        { "title": "Police AI: dispatch, search, pursue, arrest", "state": "todo" },
+        { "title": "Hunted state behaviour", "state": "todo" },
+        { "title": "Melee combat", "state": "todo" },
+        { "title": "Firearms", "state": "todo" },
+        { "title": "Gore system (Full/Reduced/Off)", "state": "todo" },
+        { "title": "Verify Day 1 at zero kills and zero notoriety", "state": "todo" }
+      ]
+    },
+    {
+      "id": "S5",
+      "name": "Ben",
+      "nameFr": "Ben",
+      "goal": "The player character. Stylized likeness, rigged and animated.",
+      "goalFr": "Le personnage joueur. Ressemblance stylisee, riggee et animee.",
+      "start": "2026-10-24",
+      "end": "2026-11-21",
+      "status": "planned",
+      "items": [
+        { "title": "Photo reference session", "state": "todo" },
+        { "title": "Stylized head sculpt + retopo", "state": "todo" },
+        { "title": "Body model, rig, animation set", "state": "todo" },
+        { "title": "First-person hands", "state": "todo" },
+        { "title": "Replace placeholder capsule", "state": "todo" }
+      ]
+    },
+    {
+      "id": "S6",
+      "name": "The Week",
+      "nameFr": "La semaine",
+      "goal": "Days 2-5, full VO pass in both languages, release plumbing.",
+      "goalFr": "Jours 2-5, passe VO complete dans les deux langues, chaine de release.",
+      "start": "2026-11-21",
+      "end": "2027-01-16",
+      "status": "planned",
+      "items": [
+        { "title": "Days 2-5 with escalating lists", "state": "todo" },
+        { "title": "Day report screen", "state": "todo" },
+        { "title": "Main menu + settings UI", "state": "todo" },
+        { "title": "Full VO recording pass, FR + EN", "state": "todo" },
+        { "title": "Export presets + release workflow", "state": "todo" }
+      ]
+    }
+  ]
+}

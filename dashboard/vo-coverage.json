@@ -1,0 +1,182 @@
+{
+  "generated": "2026-07-25T08:29:32.4671112+02:00",
+  "totalLines": 53,
+  "locales": {
+    "en": {
+      "recorded": 0,
+      "missing": 53,
+      "placeholders": 0,
+      "percent": 0.0,
+      "orphans": [],
+      "bySpeaker": {
+        "ben": {
+          "total": 40,
+          "recorded": 0
+        },
+        "civilian": {
+          "total": 5,
+          "recorded": 0
+        },
+        "clerk": {
+          "total": 3,
+          "recorded": 0
+        },
+        "hoa": {
+          "total": 1,
+          "recorded": 0
+        },
+        "influencer": {
+          "total": 1,
+          "recorded": 0
+        },
+        "police": {
+          "total": 3,
+          "recorded": 0
+        }
+      },
+      "missingKeys": [
+        "ben.wake.day1",
+        "ben.wake.tired",
+        "ben.errand.milk.start",
+        "ben.errand.milk.arrive",
+        "ben.errand.milk.queue",
+        "ben.errand.milk.done",
+        "ben.errand.paycheck.start",
+        "ben.errand.paycheck.queue",
+        "ben.errand.paycheck.form",
+        "ben.errand.paycheck.done",
+        "ben.errand.new",
+        "ben.errand.all_done",
+        "ben.queue.wait_short",
+        "ben.queue.wait_long",
+        "ben.queue.cut",
+        "ben.petition.refuse",
+        "ben.hoa.encounter",
+        "ben.influencer.encounter",
+        "ben.support.hold",
+        "ben.terms.accept",
+        "ben.combat.first_blood",
+        "ben.combat.melee_hit",
+        "ben.combat.gun_draw",
+        "ben.combat.reload",
+        "ben.combat.outnumbered",
+        "ben.combat.low_health",
+        "ben.combat.kill_regret",
+        "ben.pacifist.praise",
+        "ben.pacifist.tempted",
+        "ben.police.spotted",
+        "ben.police.chase",
+        "ben.police.escaped",
+        "ben.police.arrested",
+        "ben.taunt.generic",
+        "ben.taunt.crowd",
+        "ben.hurt.light",
+        "ben.hurt.heavy",
+        "ben.death",
+        "ben.home.arrive",
+        "ben.home.sleep",
+        "npc.civilian.greet",
+        "npc.civilian.annoyed",
+        "npc.civilian.scared",
+        "npc.civilian.flee",
+        "npc.civilian.gossip",
+        "npc.clerk.next",
+        "npc.clerk.closed",
+        "npc.clerk.form",
+        "npc.hoa.warning",
+        "npc.influencer.pitch",
+        "npc.police.halt",
+        "npc.police.warning",
+        "npc.police.pursue"
+      ]
+    },
+    "fr": {
+      "recorded": 0,
+      "missing": 53,
+      "placeholders": 0,
+      "percent": 0.0,
+      "orphans": [],
+      "bySpeaker": {
+        "ben": {
+          "total": 40,
+          "recorded": 0
+        },
+        "civilian": {
+          "total": 5,
+          "recorded": 0
+        },
+        "clerk": {
+          "total": 3,
+          "recorded": 0
+        },
+        "hoa": {
+          "total": 1,
+          "recorded": 0
+        },
+        "influencer": {
+          "total": 1,
+          "recorded": 0
+        },
+        "police": {
+          "total": 3,
+          "recorded": 0
+        }
+      },
+      "missingKeys": [
+        "ben.wake.day1",
+        "ben.wake.tired",
+        "ben.errand.milk.start",
+        "ben.errand.milk.arrive",
+        "ben.errand.milk.queue",
+        "ben.errand.milk.done",
+        "ben.errand.paycheck.start",
+        "ben.errand.paycheck.queue",
+        "ben.errand.paycheck.form",
+        "ben.errand.paycheck.done",
+        "ben.errand.new",
+        "ben.errand.all_done",
+        "ben.queue.wait_short",
+        "ben.queue.wait_long",
+        "ben.queue.cut",
+        "ben.petition.refuse",
+        "ben.hoa.encounter",
+        "ben.influencer.encounter",
+        "ben.support.hold",
+        "ben.terms.accept",
+        "ben.combat.first_blood",
+        "ben.combat.melee_hit",
+        "ben.combat.gun_draw",
+        "ben.combat.reload",
+        "ben.combat.outnumbered",
+        "ben.combat.low_health",
+        "ben.combat.kill_regret",
+        "ben.pacifist.praise",
+        "ben.pacifist.tempted",
+        "ben.police.spotted",
+        "ben.police.chase",
+        "ben.police.escaped",
+        "ben.police.arrested",
+        "ben.taunt.generic",
+        "ben.taunt.crowd",
+        "ben.hurt.light",
+        "ben.hurt.heavy",
+        "ben.death",
+        "ben.home.arrive",
+        "ben.home.sleep",
+        "npc.civilian.greet",
+        "npc.civilian.annoyed",
+        "npc.civilian.scared",
+        "npc.civilian.flee",
+        "npc.civilian.gossip",
+        "npc.clerk.next",
+        "npc.clerk.closed",
+        "npc.clerk.form",
+        "npc.hoa.warning",
+        "npc.influencer.pitch",
+        "npc.police.halt",
+        "npc.police.warning",
+        "npc.police.pursue"
+      ]
+    }
+  }
+}

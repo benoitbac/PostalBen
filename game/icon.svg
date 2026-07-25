@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <rect width="128" height="128" rx="20" fill="#14150f"/>
+  <!-- A shopping list, which is the whole game -->
+  <rect x="34" y="22" width="60" height="84" rx="5" fill="#e8e6dc"/>
+  <rect x="52" y="16" width="24" height="12" rx="3" fill="#c9a227"/>
+  <g fill="#34382a">
+    <rect x="44" y="44" width="8" height="8" rx="2"/>
+    <rect x="44" y="62" width="8" height="8" rx="2"/>
+    <rect x="44" y="80" width="8" height="8" rx="2"/>
+  </g>
+  <g fill="#9b9c8c">
+    <rect x="58" y="46" width="28" height="4" rx="2"/>
+    <rect x="58" y="64" width="28" height="4" rx="2"/>
+    <rect x="58" y="82" width="20" height="4" rx="2"/>
+  </g>
+  <!-- First item ticked. It was the last easy one. -->
+  <path d="M43 48 l4 5 l7 -9" stroke="#6f9e4c" stroke-width="4" fill="none"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M96 96 l18 18 M114 96 l-18 18" stroke="#b4553f" stroke-width="7"
+        stroke-linecap="round"/>
+</svg>

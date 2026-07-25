@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3 uid="uid://bpostalbenplayer"]
+
+[ext_resource type="Script" path="res://scripts/player/BenController.cs" id="1_ben"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ben"]
+radius = 0.38
+height = 1.8
+
+[node name="Ben" type="CharacterBody3D"]
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("1_ben")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_ben")
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Head"]
+fov = 78.0
+near = 0.05
