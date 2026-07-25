@@ -93,12 +93,27 @@ function renderGantt(sprints) {
 
     const trackCell = el('td');
     const track = el('div', 'track');
-    const bar = el('div', 'bar ' + s.status, pct > 0 ? pct + '%' : '');
+    const widthPct = Math.max(3, (100 * (to.getTime() - from.getTime())) / span);
+
+    const bar = el('div', 'bar ' + s.status);
     bar.style.left = (100 * (from.getTime() - min)) / span + '%';
-    bar.style.width =
-      Math.max(3, (100 * (to.getTime() - from.getTime())) / span) + '%';
+    bar.style.width = widthPct + '%';
     bar.title = `${s.id} — ${s.goal}`;
     track.append(bar);
+
+    // A short sprint in a long timeline gets a bar too narrow to hold its own label.
+    // Below that width the percentage sits just outside the bar instead of spilling
+    // over it.
+    if (pct > 0) {
+      const roomy = widthPct > 12;
+      const label = el('span', 'bar-pct' + (roomy ? ' inside' : ' outside'), pct + '%');
+      if (roomy) {
+        bar.append(label);
+      } else {
+        label.style.left = `calc(${(100 * (from.getTime() - min)) / span + widthPct}% + 6px)`;
+        track.append(label);
+      }
+    }
 
     // "Today" marker, only when the window actually contains today.
     if (now >= min && now <= max) {
