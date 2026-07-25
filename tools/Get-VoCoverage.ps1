@@ -100,5 +100,9 @@ foreach ($loc in $locales) {
 }
 
 $out = Join-Path $root 'dashboard/vo-coverage.json'
-$report | ConvertTo-Json -Depth 6 | Out-File -FilePath $out -Encoding utf8
+
+# BOM-less UTF-8: Out-File's "utf8" emits a BOM under PowerShell 5.1, and a leading
+# BOM makes JSON.parse throw in the browser when the dashboard fetches this file.
+$utf8NoBom = New-Object System.Text.UTF8Encoding $false
+[System.IO.File]::WriteAllText($out, ($report | ConvertTo-Json -Depth 6), $utf8NoBom)
 if (-not $Quiet) { Write-Host "`nWrote $out" }

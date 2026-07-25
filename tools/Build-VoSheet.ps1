@@ -88,5 +88,11 @@ $takes = $total * $locales.Count
 [void]$sb.AppendLine("**$total lines per language $emDash $takes takes total for this sheet.**")
 
 $out = Join-Path $root 'docs/VO_SCRIPT.md'
-$sb.ToString() | Out-File -FilePath $out -Encoding utf8
+
+# Written via WriteAllText rather than Out-File: PowerShell 5.1's "utf8" emits a BOM
+# and pwsh 7's does not, so Out-File produces a different file depending on the host
+# and CI's staleness check fails on a file nobody edited.
+$utf8NoBom = New-Object System.Text.UTF8Encoding $false
+[System.IO.File]::WriteAllText($out, $sb.ToString(), $utf8NoBom)
+
 Write-Host "Wrote $out ($total lines, $($locales.Count) locale(s))"

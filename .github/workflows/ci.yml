@@ -50,14 +50,19 @@ jobs:
         working-directory: game
         run: dotnet build PostalBen.csproj --configuration Release
 
-      # Import compiles the localization CSVs into .translation resources. A failure
-      # here usually means a malformed CSV or a broken scene reference.
+      # Import compiles the localization CSVs into .translation resources.
+      #
+      # Two passes on purpose: on a clean checkout the .translation files referenced by
+      # project.godot do not exist yet, so the first pass always logs "cannot open file"
+      # before generating them. Only the second pass is meaningful, and that is the one
+      # we assert on. A malformed CSV or broken scene reference still fails there.
       - name: Import assets
         working-directory: game
         run: |
+          godot --headless --import --quit-after 600 > /dev/null 2>&1 || true
           godot --headless --import --quit-after 600 2>&1 | tee import.log
           if grep -q '^ERROR:' import.log; then
-            echo "::error::Godot reported import errors"
+            echo "::error::Godot reported import errors on a warm import"
             grep '^ERROR:' import.log
             exit 1
           fi
