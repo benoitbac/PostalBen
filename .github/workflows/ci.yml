@@ -46,9 +46,12 @@ jobs:
           ln -sf ~/godot/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64 ~/godot/godot
           echo "$HOME/godot" >> "$GITHUB_PATH"
 
+      # Debug, not Release: the headless editor and `godot --headless` load the Debug
+      # assembly from .godot/mono/temp/bin/Debug. A Release-only build leaves that path
+      # empty and every autoload fails with "script is not compiling".
       - name: Build C#
         working-directory: game
-        run: dotnet build PostalBen.csproj --configuration Release
+        run: dotnet build PostalBen.csproj --configuration Debug
 
       # Import compiles the localization CSVs into .translation resources.
       #
