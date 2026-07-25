@@ -29,6 +29,7 @@ ui.hud.no_weapon,Bare hands,Mains nues
 ui.hud.wanted,Wanted,Recherché
 ui.hud.day,Day %d,Jour %d
 ui.hud.interact_prompt,[E] %s,[E] %s
+ui.hud.money,%d EUR,%d EUR
 ui.errand.log_title,Errand List,Liste de courses
 ui.errand.empty,Nothing left. Go home.,Plus rien. Rentre.
 ui.errand.new,New errand,Nouvelle course

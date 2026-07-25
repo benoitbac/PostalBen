@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace PostalBen.Systems;
@@ -48,6 +49,7 @@ public partial class LocaleManager : Node
             return;
 
         Current = locale;
+        Culture = CultureInfo.GetCultureInfo(locale);
         TranslationServer.SetLocale(locale);
         Persist(locale);
         EmitSignal(SignalName.LocaleChanged, locale);
@@ -67,6 +69,13 @@ public partial class LocaleManager : Node
 
     public LanguageOption CurrentOption =>
         Supported.First(l => l.Code == Current);
+
+    /// <summary>
+    /// Culture for formatting numbers and dates in UI text. Follows the *game* language,
+    /// not the OS: a French player on an English machine should see French number
+    /// formatting, and vice versa.
+    /// </summary>
+    public CultureInfo Culture { get; private set; } = CultureInfo.GetCultureInfo(FallbackLocale);
 
     private static string DetectSystemLocale() =>
         Normalize(OS.GetLocaleLanguage());

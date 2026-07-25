@@ -24,6 +24,7 @@ AudioDirector="*res://scripts/audio/AudioDirector.cs"
 VoiceBank="*res://scripts/audio/VoiceBank.cs"
 Subtitles="*res://scripts/ui/SubtitleLayer.cs"
 GameState="*res://scripts/systems/GameState.cs"
+Inventory="*res://scripts/systems/Inventory.cs"
 Notoriety="*res://scripts/systems/NotorietySystem.cs"
 ErrandLog="*res://scripts/systems/ErrandLog.cs"
 

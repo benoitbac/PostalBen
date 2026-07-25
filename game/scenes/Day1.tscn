@@ -1,7 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://bpostalbenday1"]
+[gd_scene load_steps=10 format=3 uid="uid://bpostalbenday1"]
 
 [ext_resource type="Script" path="res://scripts/systems/Day1.cs" id="1_day1"]
 [ext_resource type="PackedScene" uid="uid://bpostalbenplayer" path="res://scenes/Ben.tscn" id="2_ben"]
+[ext_resource type="Script" path="res://scripts/world/DistrictBuilder.cs" id="3_district"]
+[ext_resource type="Script" path="res://scripts/ui/Hud.cs" id="4_hud"]
 
 [sub_resource type="ProceduralSkyMaterial" id="Sky_day1"]
 sky_top_color = Color(0.38, 0.45, 0.55, 1)
@@ -52,6 +54,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 mesh = SubResource("GroundMesh_day1")
 
 [node name="Ben" parent="." instance=ExtResource("2_ben")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.1, 6)
 
-[node name="Blockout" type="Node3D" parent="."]
+[node name="District" type="Node3D" parent="."]
+script = ExtResource("3_district")
+
+[node name="Hud" type="CanvasLayer" parent="."]
+script = ExtResource("4_hud")

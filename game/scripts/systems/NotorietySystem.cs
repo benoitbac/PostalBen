@@ -90,6 +90,9 @@ public partial class NotorietySystem : Node
     {
         Incident.Rude => 4f,
         Incident.Trespass => 8f,
+        // Deliberately cheap: walking out with three quid of milk should be a viable
+        // way to finish an errand while broke, not a one-way ticket to a manhunt.
+        Incident.Theft => 12f,
         Incident.Vandalism => 14f,
         Incident.WeaponDrawn => 22f,
         Incident.Assault => 30f,
@@ -131,6 +134,7 @@ public partial class NotorietySystem : Node
     {
         Rude,
         Trespass,
+        Theft,
         Vandalism,
         WeaponDrawn,
         Assault,
