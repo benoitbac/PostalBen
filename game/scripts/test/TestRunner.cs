@@ -36,6 +36,8 @@ public partial class TestRunner : Node3D
         RunSafely(nameof(BankRefusesWithoutTheForm), BankRefusesWithoutTheForm);
         RunSafely(nameof(EveryVoLineHasASubtitleInBothLanguages), EveryVoLineHasASubtitleInBothLanguages);
         RunSafely(nameof(FormatPlaceholdersAreDotNetStyle), FormatPlaceholdersAreDotNetStyle);
+        RunSafely(nameof(KillingABystanderEndsThePacifistRun), KillingABystanderEndsThePacifistRun);
+        RunSafely(nameof(CorpsesStopBehavingLikePeople), CorpsesStopBehavingLikePeople);
         RunSafely(nameof(DistrictLayoutCoversEveryDayOneToken), DistrictLayoutCoversEveryDayOneToken);
 
         await NoFixtureIsBuriedInSolidGeometry();
@@ -340,6 +342,54 @@ public partial class TestRunner : Node3D
             "Ben's spawn point is inside solid geometry");
 
         district.QueueFree();
+    }
+
+    /// <summary>
+    /// Killing a bystander must cost the pacifist run and summon police - but a single
+    /// kill must not immediately become a manhunt. This is the same 70-vs-100 gap as
+    /// OneKillIsNotAManhunt, asserted through the actual damage path rather than by
+    /// calling Report directly.
+    /// </summary>
+    private void KillingABystanderEndsThePacifistRun()
+    {
+        var notoriety = FreshNotoriety();
+        var state = GetNode<GameState>("/root/GameState");
+        state.StartDay(1);
+
+        Check(state.PacifistToday, "a fresh day should start pacifist");
+
+        var victim = new Npc.Npc();
+        Npc.Humanoid.Build(victim, 1.7f, 1f, Colors.White, Colors.Black, Colors.Tan);
+        AddChild(victim);
+
+        victim.TakeDamage(1000f, Vector3.Zero);
+
+        Check(victim.IsDead, "enough damage should kill an NPC");
+        Check(state.KillsToday == 1, $"the kill should be recorded (was {state.KillsToday})");
+        Check(!state.PacifistToday, "a kill should end the pacifist day");
+        Check(notoriety.Current == NotorietySystem.Level.Reported,
+            $"one killed bystander should be Reported, not {notoriety.Current}");
+
+        victim.QueueFree();
+    }
+
+    /// <summary>
+    /// A dead NPC must stop being a person: no physics, no collision, no further AI.
+    /// A corpse that keeps walking is the kind of thing that only shows up in a video.
+    /// </summary>
+    private void CorpsesStopBehavingLikePeople()
+    {
+        var victim = new Npc.Npc();
+        Npc.Humanoid.Build(victim, 1.7f, 1f, Colors.White, Colors.Black, Colors.Tan);
+        AddChild(victim);
+
+        victim.TakeDamage(1000f, Vector3.Back);
+
+        Check(victim.IsDead, "the NPC should be dead");
+        Check(victim.CollisionLayer == 0, "a corpse should leave the collision layers");
+        Check(!victim.IsPhysicsProcessing(), "a corpse should stop running its AI");
+
+        victim.QueueFree();
     }
 
     /// <summary>

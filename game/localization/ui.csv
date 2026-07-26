@@ -26,6 +26,9 @@ ui.hud.health,Health,Santé
 ui.hud.stamina,Stamina,Endurance
 ui.hud.ammo,Ammo,Munitions
 ui.hud.no_weapon,Bare hands,Mains nues
+ui.weapon.shovel,Shovel,Pelle
+ui.weapon.pistol,Pistol,Pistolet
+ui.hud.ammo_count,{0} / {1},{0} / {1}
 ui.hud.wanted,Wanted,Recherché
 ui.hud.day,Day {0},Jour {0}
 ui.hud.interact_prompt,[E] {0},[E] {0}

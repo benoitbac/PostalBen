@@ -15,8 +15,14 @@ public partial class Hud : CanvasLayer
 {
     private Label _prompt = null!;
     private Label _status = null!;
+    private Label _vitals = null!;
+    private Label _weapon = null!;
+    private Label _ammo = null!;
     private PanelContainer _logPanel = null!;
     private VBoxContainer _logList = null!;
+
+    private BenController? _ben;
+    private bool _isFirearm;
 
     private ErrandLog _errands = null!;
     private GameState _state = null!;
@@ -36,6 +42,7 @@ public partial class Hud : CanvasLayer
 
         BuildStatus();
         BuildPrompt();
+        BuildLoadout();
         BuildErrandPanel();
 
         _errands.ErrandAdded += _ => RefreshLog();
@@ -43,11 +50,26 @@ public partial class Hud : CanvasLayer
         _errands.ErrandCompleted += _ => RefreshLog();
         _locale.LocaleChanged += _ => RefreshLog();
 
-        var interactor = GetTree().GetFirstNodeInGroup("player")?.GetNodeOrNull<Interactor>("Head/Interactor");
+        var player = GetTree().GetFirstNodeInGroup("player");
+        _ben = player as BenController;
+
+        var interactor = player?.GetNodeOrNull<Interactor>("Head/Interactor");
         if (interactor is not null)
             interactor.TargetChanged += OnTargetChanged;
         else
             GD.PushWarning("[HUD] no Interactor found - the interaction prompt will stay hidden");
+
+        var weapons = player?.GetNodeOrNull<WeaponSystem>("Head/Camera3D/WeaponSystem");
+        if (weapons is not null)
+        {
+            weapons.WeaponChanged += OnWeaponChanged;
+            weapons.AmmoChanged += OnAmmoChanged;
+            OnWeaponChanged(weapons.Held.Id);
+        }
+        else
+        {
+            GD.PushWarning("[HUD] no WeaponSystem found - the loadout readout will stay blank");
+        }
 
         RefreshLog();
     }
@@ -58,6 +80,28 @@ public partial class Hud : CanvasLayer
             _state.ClockText,
             string.Format(_locale.Culture, Tr("ui.hud.money"), _inventory.Money),
             Tr(_notoriety.CurrentLabelKey));
+
+        if (_ben is not null)
+            _vitals.Text = $"{Mathf.CeilToInt(_ben.Health)} / {Mathf.CeilToInt(_ben.MaxHealth)}";
+    }
+
+    private void OnWeaponChanged(string id)
+    {
+        _weapon.Text = Tr(id switch
+        {
+            "shovel" => "ui.weapon.shovel",
+            "pistol" => "ui.weapon.pistol",
+            _ => "ui.hud.no_weapon",
+        });
+        _isFirearm = id == "pistol";
+        _ammo.Visible = _isFirearm;
+    }
+
+    private void OnAmmoChanged(int loaded, int spare)
+    {
+        if (!_isFirearm)
+            return;
+        _ammo.Text = string.Format(_locale.Culture, Tr("ui.hud.ammo_count"), loaded, spare);
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -92,6 +136,37 @@ public partial class Hud : CanvasLayer
         _prompt.AddThemeFontSizeOverride("font_size", 22);
         _prompt.AddThemeColorOverride("font_color", new Color("#ffe9a3"));
         AddChild(_prompt);
+    }
+
+    /// <summary>
+    /// Bottom-left block: health, held weapon, ammo. Postal's readout lives down there
+    /// and it keeps the centre of the screen clear for the thing you are about to hit.
+    /// </summary>
+    private void BuildLoadout()
+    {
+        var column = new VBoxContainer { Name = "Loadout" };
+        column.SetAnchorsPreset(Control.LayoutPreset.BottomLeft);
+        column.GrowVertical = Control.GrowDirection.Begin;
+        column.Position = new Vector2(38f, -132f);
+        column.AddThemeConstantOverride("separation", 2);
+        AddChild(column);
+
+        _vitals = Line(30, "#e8b0a0");
+        _weapon = Line(21, "#e8e6dc");
+        _ammo = Line(19, "#c9a227");
+        _ammo.Visible = false;
+
+        column.AddChild(_vitals);
+        column.AddChild(_weapon);
+        column.AddChild(_ammo);
+    }
+
+    private static Label Line(int size, string colour)
+    {
+        var label = new Label();
+        label.AddThemeFontSizeOverride("font_size", size);
+        label.AddThemeColorOverride("font_color", new Color(colour));
+        return label;
     }
 
     private void BuildErrandPanel()

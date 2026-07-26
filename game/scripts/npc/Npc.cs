@@ -34,7 +34,14 @@ public partial class Npc : CharacterBody3D
 
     private const float Gravity = 24f;
 
+    [Export] public float MaxHealth { get; set; } = 100f;
+
+    /// <summary>Anyone this close counts as having seen it happen.</summary>
+    private const float WitnessRange = 22f;
+
     public Mood Current { get; private set; } = Mood.Neutral;
+    public float Health { get; private set; }
+    public bool IsDead { get; private set; }
 
     private Vector3 _target;
     private float _stuckFor;
@@ -69,11 +76,87 @@ public partial class Npc : CharacterBody3D
 
         _seed = (ulong)GetInstanceId();
         _gait = NextFloat() * Mathf.Tau; // desynchronise the crowd's footfalls
+        Health = MaxHealth;
+        AddToGroup("npc");
         PickNewTarget();
+    }
+
+    /// <summary>
+    /// Takes a hit. Anything that reduces health also alarms the neighbours, because a
+    /// wounded person shouting is exactly how a street learns something is wrong.
+    /// </summary>
+    public void TakeDamage(float amount, Vector3 from)
+    {
+        if (IsDead || amount <= 0f)
+            return;
+
+        Health = Mathf.Max(0f, Health - amount);
+
+        if (Health <= 0f)
+        {
+            Die(from);
+            return;
+        }
+
+        Current = Mood.Fleeing;
+        if (_barkCooldown <= 0f)
+        {
+            _voice.Say("npc.civilian.scared", "civilian");
+            _barkCooldown = 3f;
+        }
+
+        _notoriety.Report(NotorietySystem.Incident.Assault, GlobalPosition, WitnessesNearby());
+    }
+
+    private void Die(Vector3 from)
+    {
+        IsDead = true;
+
+        GetNode<GameState>("/root/GameState").RecordKill();
+        _notoriety.Report(NotorietySystem.Incident.Kill, GlobalPosition, WitnessesNearby());
+
+        // Fall away from whatever hit them, and stop being a person: no AI, no
+        // collision against the player, but the body stays as scenery. Ben has to walk
+        // past what he did.
+        var away = (GlobalPosition - from) with { Y = 0f };
+        if (away.LengthSquared() < 0.01f)
+            away = Vector3.Forward;
+
+        SetPhysicsProcess(false);
+        CollisionLayer = 0;
+        CollisionMask = 0;
+        Velocity = Vector3.Zero;
+
+        if (_body is null)
+            return;
+
+        var tween = CreateTween().SetParallel();
+        tween.TweenProperty(_body, "rotation:x", Mathf.DegToRad(-84f), 0.5f)
+            .SetTrans(Tween.TransitionType.Bounce).SetEase(Tween.EaseType.Out);
+        tween.TweenProperty(_body, "position:y", -0.15f, 0.5f);
+        tween.TweenProperty(_body, "rotation:z", (NextFloat() - 0.5f) * 0.8f, 0.5f);
+    }
+
+    /// <summary>How many other residents are close enough to have seen it.</summary>
+    private int WitnessesNearby()
+    {
+        var seen = 0;
+        foreach (var node in GetTree().GetNodesInGroup("npc"))
+        {
+            if (node is Npc other && !other.IsDead && other != this &&
+                other.GlobalPosition.DistanceTo(GlobalPosition) < WitnessRange)
+            {
+                seen++;
+            }
+        }
+        return Mathf.Max(1, seen);
     }
 
     public override void _PhysicsProcess(double delta)
     {
+        if (IsDead)
+            return;
+
         var dt = (float)delta;
         _barkCooldown -= dt;
         _repathIn -= dt;

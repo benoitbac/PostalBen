@@ -60,73 +60,15 @@ public partial class Crowd : Node3D
             WalkSpeed = 1.7f + NextFloat() * 0.9f,
         };
 
-        // Blocky humanoid: head, torso, two arms, two legs. Stacked capsules read as
-        // skittles from any distance; separated limbs read as a person even at 40 m,
-        // and they give the walk cycle something to swing.
         var height = 1.66f + NextFloat() * 0.2f;
         var build = 0.95f + NextFloat() * 0.2f;
 
-        var shirt = Material(ShirtColours[(int)(NextFloat() * ShirtColours.Length) % ShirtColours.Length]);
-        var trousers = Material(TrouserColours[(int)(NextFloat() * TrouserColours.Length) % TrouserColours.Length]);
-        var skin = Material(NextFloat() > 0.5f ? "#c69a76" : "#8d6748");
-
-        npc.AddChild(new CollisionShape3D
-        {
-            Shape = new CapsuleShape3D { Radius = 0.3f, Height = height },
-            Position = new Vector3(0f, height / 2f, 0f),
-        });
-
-        // Body pivot: the walk cycle bobs and leans this, so the collider stays put.
-        var body = new Node3D { Name = "Body" };
-        npc.AddChild(body);
-
-        var shoulderY = height * 0.72f;
-        var hipY = height * 0.5f;
-        var halfWidth = 0.21f * build;
-
-        body.AddChild(Part("Torso", new Vector3(0.42f * build, height * 0.30f, 0.24f * build),
-            new Vector3(0f, shoulderY - height * 0.15f, 0f), shirt));
-
-        body.AddChild(Part("Head", new Vector3(0.21f, 0.24f, 0.2f),
-            new Vector3(0f, height * 0.93f, 0f), skin));
-
-        body.AddChild(Part("Neck", new Vector3(0.12f, 0.07f, 0.12f),
-            new Vector3(0f, height * 0.81f, 0f), skin));
-
-        foreach (var side in new[] { -1f, 1f })
-        {
-            var arm = new Node3D
-            {
-                Name = side < 0 ? "ArmL" : "ArmR",
-                Position = new Vector3(side * (halfWidth + 0.09f), shoulderY, 0f),
-            };
-            // Pivot at the shoulder so rotating the node swings the whole arm.
-            arm.AddChild(Part("Limb", new Vector3(0.11f, height * 0.32f, 0.13f),
-                new Vector3(0f, -height * 0.16f, 0f), shirt));
-            body.AddChild(arm);
-
-            var leg = new Node3D
-            {
-                Name = side < 0 ? "LegL" : "LegR",
-                Position = new Vector3(side * 0.11f, hipY, 0f),
-            };
-            leg.AddChild(Part("Limb", new Vector3(0.15f, height * 0.46f, 0.17f),
-                new Vector3(0f, -height * 0.23f, 0f), trousers));
-            body.AddChild(leg);
-        }
+        Humanoid.Build(npc, height, build,
+            new Color(ShirtColours[(int)(NextFloat() * ShirtColours.Length) % ShirtColours.Length]),
+            new Color(TrouserColours[(int)(NextFloat() * TrouserColours.Length) % TrouserColours.Length]),
+            new Color(NextFloat() > 0.5f ? "#c69a76" : "#8d6748"));
 
         return npc;
-    }
-
-    private static MeshInstance3D Part(string name, Vector3 size, Vector3 pos, StandardMaterial3D material)
-    {
-        return new MeshInstance3D
-        {
-            Name = name,
-            Mesh = new BoxMesh { Size = size },
-            Position = pos,
-            MaterialOverride = material,
-        };
     }
 
     /// <summary>
@@ -144,12 +86,6 @@ public partial class Crowd : Node3D
             ? new Vector3(travel, 0.2f, lane)
             : new Vector3(lane, 0.2f, travel);
     }
-
-    private static StandardMaterial3D Material(string hex) => new()
-    {
-        AlbedoColor = new Color(hex),
-        Roughness = 0.88f,
-    };
 
     private float NextFloat()
     {
