@@ -56,6 +56,17 @@ public partial class DistrictBuilder : Node3D
         foreach (var road in layout.Roads ?? new List<Road>())
             BuildRoad(road);
 
+        foreach (var lot in layout.Lots ?? new List<Lot>())
+        {
+            // Flat pads: forecourts, parking, the concrete apron in front of a strip
+            // mall. Laid slightly proud of the ground so they don't z-fight with it.
+            AddBox(lot.Name, new Vector3(lot.Pos[0], 0.06f, lot.Pos[1]),
+                new Vector3(lot.Size[0], 0.12f, lot.Size[1]), Colour(lot.Colour), collides: false);
+
+            for (var i = 0; i < lot.Cars; i++)
+                AddCar($"{lot.Name}_car{i}", lot, i);
+        }
+
         foreach (var terrace in layout.Terraces ?? new List<Terrace>())
             BuildTerrace(terrace);
 
@@ -135,6 +146,9 @@ public partial class DistrictBuilder : Node3D
 
         BuildWalls(building.Name, centre, size, Colour(building.Colour), door);
         BuildDoor(building.Name, door);
+
+        if (building.Sign is { } sign)
+            BuildSign(building.Name, door, size.Y, sign);
     }
 
     /// <summary>
@@ -315,6 +329,102 @@ public partial class DistrictBuilder : Node3D
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// A lit fascia sign over the door. Strip malls are mostly signage, and a saturated
+    /// board is what tells the eye which of forty identical boxes is the shop.
+    /// </summary>
+    private void BuildSign(string name, DoorSpec door, float wallHeight, SignSpec sign)
+    {
+        var y = Mathf.Min(wallHeight - 1.1f, 4.2f);
+        var board = new MeshInstance3D
+        {
+            Name = $"{name}_sign",
+            Mesh = new BoxMesh { Size = new Vector3(sign.Width, 1.6f, 0.35f) },
+            Position = new Vector3(door.At[0], y, door.At[1] + 0.25f),
+            MaterialOverride = new StandardMaterial3D
+            {
+                AlbedoColor = new Color(sign.Colour ?? "#c9452f"),
+                // Emissive so it reads from across the lot and at dusk.
+                EmissionEnabled = true,
+                Emission = new Color(sign.Colour ?? "#c9452f"),
+                EmissionEnergyMultiplier = 0.6f,
+                Roughness = 0.6f,
+            },
+        };
+        AddChild(board);
+
+        AddBox($"{name}_sign_trim",
+            new Vector3(door.At[0], y + 0.95f, door.At[1] + 0.25f),
+            new Vector3(sign.Width + 0.4f, 0.3f, 0.45f), "#2b2b28", collides: false);
+    }
+
+    private static readonly string[] CarPaint =
+    {
+        "#8d3f33", "#2f4a63", "#6d7a5c", "#8a8f96", "#b8ab8a",
+        "#3a3f45", "#7a5a3c", "#546b6b",
+    };
+
+    /// <summary>
+    /// A parked car: body, cabin, wheels. Not a good car - but a lot with cars in it
+    /// reads as a place where people are, and an empty one reads as a car park in a
+    /// disaster film.
+    /// </summary>
+    private void AddCar(string name, Lot lot, int index)
+    {
+        // Deterministic placement: rows across the lot's long axis, nose-in.
+        var alongX = lot.Size[0] >= lot.Size[1];
+        var span = alongX ? lot.Size[0] : lot.Size[1];
+        var slots = Mathf.Max(1, Mathf.FloorToInt(span / 3.2f));
+        var slot = index % slots;
+
+        var offset = (slot + 0.5f) / slots * span - span / 2f;
+        var depth = ((index / slots) % 2 == 0 ? -1f : 1f) * (alongX ? lot.Size[1] : lot.Size[0]) * 0.22f;
+
+        var centre = alongX
+            ? new Vector3(lot.Pos[0] + offset, 0f, lot.Pos[1] + depth)
+            : new Vector3(lot.Pos[0] + depth, 0f, lot.Pos[1] + offset);
+
+        var paint = Material(CarPaint[(index * 3 + (int)Mathf.Abs(lot.Pos[0])) % CarPaint.Length]);
+        var glass = Material("#25303a");
+        var rubber = Material("#1b1b1c");
+
+        var body = new StaticBody3D { Name = name, Position = centre, CollisionLayer = 1, CollisionMask = 0 };
+
+        var length = alongX ? 2.0f : 4.4f;
+        var width = alongX ? 4.4f : 2.0f;
+
+        void Part(Vector3 offsetPos, Vector3 size, StandardMaterial3D material)
+        {
+            body.AddChild(new MeshInstance3D
+            {
+                Mesh = new BoxMesh { Size = size },
+                Position = offsetPos,
+                MaterialOverride = material,
+            });
+        }
+
+        Part(new Vector3(0f, 0.7f, 0f), new Vector3(width, 0.85f, length), paint);
+        Part(new Vector3(0f, 1.35f, 0f),
+            new Vector3(width * 0.72f, 0.62f, length * 0.72f), glass);
+
+        for (var wx = -1; wx <= 1; wx += 2)
+        {
+            for (var wz = -1; wz <= 1; wz += 2)
+            {
+                Part(new Vector3(wx * width * 0.42f, 0.33f, wz * length * 0.34f),
+                    new Vector3(alongX ? 0.28f : 0.7f, 0.62f, alongX ? 0.7f : 0.28f), rubber);
+            }
+        }
+
+        body.AddChild(new CollisionShape3D
+        {
+            Shape = new BoxShape3D { Size = new Vector3(width, 1.5f, length) },
+            Position = new Vector3(0f, 0.75f, 0f),
+        });
+
+        AddChild(body);
     }
 
     /// <summary>
@@ -544,6 +654,10 @@ public partial class DistrictBuilder : Node3D
         var material = new StandardMaterial3D
         {
             AlbedoTexture = diffuse,
+            // Albedo multiplies the texture. Poly Haven scans are neutral-grey studio
+            // captures; the town is meant to be sun-bleached and dusty, so everything
+            // gets warmed here rather than by grading the whole frame.
+            AlbedoColor = TintFor(name),
             Uv1Triplanar = true,
             Uv1Scale = Vector3.One * TextureScaleFor(name),
             Roughness = 1f,
@@ -575,14 +689,41 @@ public partial class DistrictBuilder : Node3D
     private static float TextureScaleFor(string name) => name switch
     {
         "brick_wall_006" => 1.0f,
-        "painted_plaster_wall" => 0.5f,
+        "red_brick_03" => 1.0f,
+        "painted_plaster_wall" => 0.35f,
+        "concrete_layers_02" => 0.3f,
         "concrete_wall_008" => 0.45f,
+        "corrugated_iron_02" => 0.5f,
         "asphalt_02" => 0.35f,
+        "asphalt_04" => 0.3f,
         "concrete_floor_worn_001" => 0.5f,
+        "concrete_pavers_02" => 0.35f,
         "pavement_02" => 0.5f,
+        "dry_ground_rocks" => 0.6f,
+        "sand_02" => 0.8f,
         "grass_medium_01" => 2.0f,
         "wood_planks_grey" => 1.2f,
         _ => 0.6f,
+    };
+
+    /// <summary>
+    /// Warm/desaturate multiplier per surface. Stucco goes sandy, concrete goes bone,
+    /// asphalt stays cool so the roads read against the dirt.
+    /// </summary>
+    private static Color TintFor(string name) => name switch
+    {
+        "painted_plaster_wall" => new Color(1.0f, 0.88f, 0.7f),
+        "concrete_layers_02" => new Color(0.98f, 0.92f, 0.82f),
+        "concrete_pavers_02" => new Color(0.95f, 0.88f, 0.76f),
+        "concrete_floor_worn_001" => new Color(0.96f, 0.9f, 0.78f),
+        "corrugated_iron_02" => new Color(0.92f, 0.86f, 0.78f),
+        "red_brick_03" => new Color(1.0f, 0.86f, 0.72f),
+        "dry_ground_rocks" => new Color(1.0f, 0.82f, 0.58f),
+        "sand_02" => new Color(1.0f, 0.9f, 0.68f),
+        "asphalt_04" => new Color(0.86f, 0.84f, 0.82f),
+        "asphalt_02" => new Color(0.86f, 0.84f, 0.82f),
+        "wood_planks_grey" => new Color(1.0f, 0.9f, 0.76f),
+        _ => Colors.White,
     };
 
     private static Texture2D? LoadMap(string name, string suffix)
@@ -599,6 +740,7 @@ public partial class DistrictBuilder : Node3D
         public Dictionary<string, string>? Palette { get; set; }
         public GroundSpec? Ground { get; set; }
         public List<Road>? Roads { get; set; }
+        public List<Lot>? Lots { get; set; }
         public List<Terrace>? Terraces { get; set; }
         public List<Building>? Buildings { get; set; }
         public List<Fixture>? Fixtures { get; set; }
@@ -610,6 +752,15 @@ public partial class DistrictBuilder : Node3D
         public float[] To { get; set; } = { 0, 0 };
         public float Width { get; set; } = 10f;
         public bool Furniture { get; set; } = true;
+    }
+
+    private sealed class Lot
+    {
+        public string Name { get; set; } = "lot";
+        public float[] Pos { get; set; } = { 0, 0 };
+        public float[] Size { get; set; } = { 10, 10 };
+        public string? Colour { get; set; }
+        public int Cars { get; set; }
     }
 
     private sealed class GroundSpec
@@ -639,6 +790,13 @@ public partial class DistrictBuilder : Node3D
         public float[] Size { get; set; } = { 10, 5, 10 };
         public string? Colour { get; set; }
         public DoorSpec? Door { get; set; }
+        public SignSpec? Sign { get; set; }
+    }
+
+    private sealed class SignSpec
+    {
+        public float Width { get; set; } = 8f;
+        public string? Colour { get; set; }
     }
 
     private sealed class DoorSpec

@@ -28,14 +28,21 @@ $outRoot = Join-Path $root 'game/assets/textures'
 
 # Poly Haven asset id -> the role it plays in the district.
 $manifest = [ordered]@{
-    'brick_wall_006'          = 'house walls'
-    'painted_plaster_wall'    = 'shop walls'
-    'concrete_wall_008'       = 'bank and civic blocks'
-    'asphalt_02'              = 'road surface'
-    'concrete_floor_worn_001' = 'pavement'
-    'pavement_02'             = 'plaza and forecourt'
-    'grass_medium_01'         = 'park and verges'
-    'wood_planks_grey'        = 'doors and shop fittings'
+    # Arid suburban palette - sun-bleached stucco, dust and concrete, not European brick.
+    'dry_ground_rocks'        = 'ground: dry dirt and scrub'
+    'sand_02'                 = 'ground: sand verges and lots'
+    'painted_plaster_wall'    = 'stucco walls (the default here)'
+    'concrete_layers_02'      = 'commercial and civic blocks'
+    'corrugated_iron_02'      = 'warehouses, sheds, roller shutters'
+    'red_brick_03'            = 'accent walls, older buildings'
+    'asphalt_04'              = 'road surface'
+    'concrete_floor_worn_001' = 'kerbs and sidewalks'
+    'concrete_pavers_02'      = 'forecourts and parking lots'
+    'wood_planks_grey'        = 'doors, porches, shop fittings'
+    'brick_wall_006'          = 'legacy accent (kept for variety)'
+    'asphalt_02'              = 'legacy road (kept for variety)'
+    'pavement_02'             = 'legacy paving (kept for variety)'
+    'grass_medium_01'         = 'the one patch of watered lawn'
 }
 
 # Poly Haven's file tree keys these differently per map type.

@@ -52,6 +52,9 @@ public partial class BenController : CharacterBody3D
     private bool _sprintLocked;
     private float _standHeight;
 
+    /// <summary>Mouse-motion events discarded on startup. See _UnhandledInput.</summary>
+    private int _settleFrames = 3;
+
     private const float CrouchHeight = 1.1f;
 
     public override void _Ready()
@@ -73,6 +76,16 @@ public partial class BenController : CharacterBody3D
     {
         if (IsDead)
             return;
+
+        // The first motion event after the window grabs the cursor carries the whole
+        // distance from wherever the pointer happened to be, which snaps the view to a
+        // random direction on startup. Swallow input until the cursor has settled.
+        if (_settleFrames > 0)
+        {
+            if (@event is InputEventMouseMotion)
+                _settleFrames--;
+            return;
+        }
 
         if (@event is InputEventMouseMotion motion && Input.MouseMode == Input.MouseModeEnum.Captured)
         {
