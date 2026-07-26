@@ -67,6 +67,16 @@ public partial class DistrictBuilder : Node3D
                 AddCar($"{lot.Name}_car{i}", lot, i);
         }
 
+        // Loose solid boxes: shelving, counters, dumpsters, anything that just needs to
+        // be in the way. Interiors live or die on these.
+        foreach (var block in layout.Blocks ?? new List<Block>())
+        {
+            AddBox(block.Name,
+                new Vector3(block.Pos[0], block.Pos[1] + block.Size[1] / 2f, block.Pos[2]),
+                new Vector3(block.Size[0], block.Size[1], block.Size[2]),
+                Colour(block.Colour), collides: block.Solid);
+        }
+
         foreach (var terrace in layout.Terraces ?? new List<Terrace>())
             BuildTerrace(terrace);
 
@@ -534,14 +544,20 @@ public partial class DistrictBuilder : Node3D
                 break;
 
             case "till":
-                AddInteractable(new Till
+            {
+                var till = new Till
                 {
                     Item = f.Item ?? "item",
                     Price = f.Price ?? 0,
                     CompletionToken = f.Token ?? "shop.settled",
                     IdleVoiceKey = f.IdleVoice ?? string.Empty,
-                }, $"till_{f.Item}", pos, size, f.Colour);
+                };
+                AddInteractable(till, $"till_{f.Item}", pos, size, f.Colour);
+
+                if (f.Queue is { } spec)
+                    till.Queue = BuildQueue($"queue_{f.Item}", spec);
                 break;
+            }
 
             case "clerk":
                 AddInteractable(new Clerk
@@ -561,6 +577,38 @@ public partial class DistrictBuilder : Node3D
                 GD.PushWarning($"[District] unknown fixture type '{f.Type}'");
                 break;
         }
+    }
+
+    /// <summary>
+    /// Builds the waiting lane in front of a counter. The area covers the whole lane so
+    /// anyone who walks into it is enrolled - joining a queue should be walking up to
+    /// it, not pressing a button.
+    /// </summary>
+    private ServiceQueue BuildQueue(string name, QueueSpec spec)
+    {
+        var queue = new ServiceQueue
+        {
+            Name = name,
+            Position = new Vector3(spec.Pos[0], spec.Pos[1], spec.Pos[2]),
+            Spacing = spec.Spacing,
+            ServiceSeconds = spec.Service,
+            Capacity = spec.Capacity,
+            Direction = new Vector3(spec.Direction[0], 0f, spec.Direction[1]).Normalized(),
+        };
+
+        queue.AddChild(new CollisionShape3D
+        {
+            Shape = new BoxShape3D
+            {
+                Size = new Vector3(spec.Size[0], spec.Size[1], spec.Size[2]),
+            },
+            // Centre the volume on the middle of the lane rather than on the counter.
+            Position = new Vector3(spec.Direction[0], 0f, spec.Direction[1]).Normalized()
+                       * (spec.Capacity * spec.Spacing / 2f),
+        });
+
+        AddChild(queue);
+        return queue;
     }
 
     private void AddArea(Area3D area, string name, Vector3 pos, Vector3 size)
@@ -741,6 +789,7 @@ public partial class DistrictBuilder : Node3D
         public GroundSpec? Ground { get; set; }
         public List<Road>? Roads { get; set; }
         public List<Lot>? Lots { get; set; }
+        public List<Block>? Blocks { get; set; }
         public List<Terrace>? Terraces { get; set; }
         public List<Building>? Buildings { get; set; }
         public List<Fixture>? Fixtures { get; set; }
@@ -761,6 +810,16 @@ public partial class DistrictBuilder : Node3D
         public float[] Size { get; set; } = { 10, 10 };
         public string? Colour { get; set; }
         public int Cars { get; set; }
+    }
+
+    private sealed class Block
+    {
+        public string Name { get; set; } = "block";
+        /// <summary>X, ground Y, Z. The box is raised from its base, not its centre.</summary>
+        public float[] Pos { get; set; } = { 0, 0, 0 };
+        public float[] Size { get; set; } = { 1, 1, 1 };
+        public string? Colour { get; set; }
+        public bool Solid { get; set; } = true;
     }
 
     private sealed class GroundSpec
@@ -825,5 +884,17 @@ public partial class DistrictBuilder : Node3D
         public int? Price { get; set; }
         public int? Pays { get; set; }
         public int? Witnesses { get; set; }
+        public QueueSpec? Queue { get; set; }
+    }
+
+    private sealed class QueueSpec
+    {
+        public float[] Pos { get; set; } = { 0, 0, 0 };
+        public float[] Size { get; set; } = { 3, 3, 8 };
+        /// <summary>Unit vector, in XZ, pointing away from the counter.</summary>
+        public float[] Direction { get; set; } = { 0, 1 };
+        public float Spacing { get; set; } = 1.15f;
+        public float Service { get; set; } = 6.5f;
+        public int Capacity { get; set; } = 6;
     }
 }

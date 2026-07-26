@@ -22,6 +22,8 @@ public partial class Npc : CharacterBody3D
         Alarmed,
         /// <summary>Running, and not looking back.</summary>
         Fleeing,
+        /// <summary>Standing in a line, going nowhere, being an obstacle.</summary>
+        Queueing,
     }
 
     [Export] public float WalkSpeed { get; set; } = 2.1f;
@@ -142,6 +144,35 @@ public partial class Npc : CharacterBody3D
         tween.TweenProperty(_body, "rotation:z", (NextFloat() - 0.5f) * 0.8f, 0.5f);
     }
 
+    // ---------------------------------------------------------------- queueing
+
+    private World.ServiceQueue? _queue;
+
+    /// <summary>Enrolled in a line. From here they stand still and hold their place.</summary>
+    public void JoinQueue(World.ServiceQueue queue)
+    {
+        if (IsDead)
+            return;
+        _queue = queue;
+    }
+
+    /// <summary>Served, or gave up. Either way they go back to wandering.</summary>
+    public void LeaveQueue()
+    {
+        _queue = null;
+        PickNewTarget();
+    }
+
+    /// <summary>Someone pushed in. Say so.</summary>
+    public void Complain()
+    {
+        if (IsDead || _barkCooldown > 0f)
+            return;
+
+        _voice.Say("npc.civilian.annoyed", "civilian");
+        _barkCooldown = 2.5f + NextFloat() * 3f;
+    }
+
     /// <summary>How many other residents are close enough to have seen it.</summary>
     private int WitnessesNearby()
     {
@@ -178,6 +209,8 @@ public partial class Npc : CharacterBody3D
             Mood.Fleeing when player is not null => (GlobalPosition - player.GlobalPosition),
             Mood.Alarmed when player is not null => (GlobalPosition - player.GlobalPosition) * 0.4f,
             Mood.Annoyed => Vector3.Zero,
+            Mood.Queueing when _queue is not null && IsInstanceValid(_queue)
+                => _queue.SlotPosition(Mathf.Max(0, _queue.PositionOf(this))) - GlobalPosition,
             _ => _target - GlobalPosition,
         };
 
@@ -257,9 +290,16 @@ public partial class Npc : CharacterBody3D
             NotorietySystem.Level.Hunted when distance < AlarmRange * 1.6f => Mood.Fleeing,
             NotorietySystem.Level.Reported when distance < AlarmRange => Mood.Fleeing,
             NotorietySystem.Level.Noticed when distance < AlarmRange => Mood.Alarmed,
+            // Queueing outranks personal space: someone standing in line does not step
+            // aside because Ben is breathing on them. That is the point of a queue.
+            _ when _queue is not null && IsInstanceValid(_queue) => Mood.Queueing,
             _ when distance < PersonalSpace => Mood.Annoyed,
             _ => Mood.Neutral,
         };
+
+        // Panic empties the shop. Anyone fleeing abandons their place in the line.
+        if (_queue is not null && Current is Mood.Fleeing or Mood.Alarmed)
+            _queue = null;
 
         if (Current != previous)
             OnMoodChanged(previous);
@@ -288,7 +328,7 @@ public partial class Npc : CharacterBody3D
 
     private void UpdateWandering(float dt)
     {
-        if (Current is Mood.Fleeing or Mood.Alarmed or Mood.Annoyed)
+        if (Current is Mood.Fleeing or Mood.Alarmed or Mood.Annoyed or Mood.Queueing)
             return;
 
         // Repick on arrival, on a timer, or when wedged against geometry.

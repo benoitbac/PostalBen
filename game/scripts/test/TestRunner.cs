@@ -42,7 +42,10 @@ public partial class TestRunner : Node3D
         RunSafely(nameof(GoreSettingIsHonoured), GoreSettingIsHonoured);
         RunSafely(nameof(DistrictLayoutCoversEveryDayOneToken), DistrictLayoutCoversEveryDayOneToken);
 
+        RunSafely(nameof(QueueSlotsAreOrderedAwayFromTheCounter), QueueSlotsAreOrderedAwayFromTheCounter);
+
         await NoFixtureIsBuriedInSolidGeometry();
+        await QueueAlwaysAdvances();
 
         GD.Print($"=== {_checks - _failures.Count}/{_checks} passed ===");
 
@@ -456,6 +459,70 @@ public partial class TestRunner : Node3D
         cfg.SetValue("ui", "gore", original);
         cfg.Save(LocaleManager.ConfigPath);
         World.Gore.Invalidate();
+    }
+
+    /// <summary>
+    /// The queue is the game's central obstruction, so the thing that must never break
+    /// is that it *always resolves*. Waiting has to work, or the patient route dies and
+    /// with it the whole design.
+    /// </summary>
+    private async System.Threading.Tasks.Task QueueAlwaysAdvances()
+    {
+        var queue = new World.ServiceQueue
+        {
+            ServiceSeconds = 0.05f,
+            Spacing = 1.2f,
+            Direction = Vector3.Back,
+        };
+        queue.AddChild(new CollisionShape3D { Shape = new BoxShape3D { Size = new Vector3(3, 3, 9) } });
+        AddChild(queue);
+
+        var waiting = new List<Npc.Npc>();
+        for (var i = 0; i < 4; i++)
+        {
+            var npc = new Npc.Npc { Position = queue.SlotPosition(i) };
+            Npc.Humanoid.Build(npc, 1.7f, 1f, Colors.White, Colors.Black, Colors.Tan);
+            AddChild(npc);
+            waiting.Add(npc);
+        }
+
+        // Two physics frames for the area to notice the bodies inside it.
+        await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
+        await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
+
+        var enrolled = queue.Length;
+        Check(enrolled > 0, "walking into the lane should enrol people in the queue");
+
+        // Let it run. Every service tick must remove exactly the person at the front.
+        for (var tick = 0; tick < 40 && queue.Length > 0; tick++)
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+
+        Check(queue.Length < enrolled,
+            $"the queue must drain over time (started {enrolled}, still {queue.Length})");
+
+        queue.QueueFree();
+        foreach (var npc in waiting)
+            npc.QueueFree();
+    }
+
+    /// <summary>
+    /// Slots must march away from the counter in order, or people stack on one spot and
+    /// the line reads as a scrum.
+    /// </summary>
+    private void QueueSlotsAreOrderedAwayFromTheCounter()
+    {
+        var queue = new World.ServiceQueue { Spacing = 1.5f, Direction = Vector3.Back };
+        AddChild(queue);
+
+        var first = queue.SlotPosition(0);
+        var second = queue.SlotPosition(1);
+        var fifth = queue.SlotPosition(4);
+
+        Check(first.DistanceTo(second) > 1.4f, "consecutive slots should be a stride apart");
+        Check(queue.GlobalPosition.DistanceTo(fifth) > queue.GlobalPosition.DistanceTo(second),
+            "later slots should be further from the counter");
+
+        queue.QueueFree();
     }
 
     /// <summary>
