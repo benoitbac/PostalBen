@@ -27,6 +27,15 @@ public partial class Police : CharacterBody3D
     /// <summary>Seconds of visual contact before they stop warning and start shooting.</summary>
     private const float WarningGrace = 1.8f;
 
+    /// <summary>Close enough to put hands on him.</summary>
+    private const float ArrestRange = 2.6f;
+
+    /// <summary>
+    /// Seconds Ben must go without attacking, at arm's length, before he is taken in.
+    /// Surrendering has to be a real option or the only way out of Hunted is dying.
+    /// </summary>
+    private const float SurrenderSeconds = 2.2f;
+
     private const float Gravity = 24f;
 
     public bool IsDead { get; private set; }
@@ -36,6 +45,7 @@ public partial class Police : CharacterBody3D
     private Vector3 _destination;
     private float _fireCooldown;
     private float _contactFor;
+    private float _surrenderFor;
     private float _barkCooldown;
     private float _gait;
     private ulong _seed;
@@ -129,6 +139,23 @@ public partial class Police : CharacterBody3D
                 Bark("npc.police.halt");
             }
 
+            // Within reach and not fighting back: take him in. Checked before the
+            // shooting branch so a player who stops swinging is always arrested rather
+            // than executed at point-blank range.
+            if (distance < ArrestRange && ben is Player.BenController target)
+            {
+                _surrenderFor += target.SecondsSinceAttack < 0.6f ? -_surrenderFor : dt;
+                if (_surrenderFor >= SurrenderSeconds)
+                {
+                    Arrest(target);
+                    return;
+                }
+            }
+            else
+            {
+                _surrenderFor = 0f;
+            }
+
             // Warn first. Only shoot once they have had eyes on for a moment and the
             // situation is genuinely a manhunt.
             if (_contactFor > WarningGrace && _notoriety.Current >= NotorietySystem.Level.Hunted
@@ -170,6 +197,21 @@ public partial class Police : CharacterBody3D
 
         if (ben is Player.BenController controller)
             controller.TakeDamage(Damage);
+    }
+
+    /// <summary>
+    /// Ends the day rather than the run. Getting arrested is a loss of the afternoon,
+    /// not a game over - the errands roll into tomorrow, longer.
+    /// </summary>
+    private void Arrest(Player.BenController ben)
+    {
+        _voice.Say("ben.police.arrested");
+
+        _notoriety.Reset();
+        ben.Detain();
+        GetNode<GameState>("/root/GameState").EndDay();
+
+        GD.Print("[Police] Ben taken in - day over");
     }
 
     private bool HasLineOfSight(Node3D target)

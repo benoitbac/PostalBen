@@ -38,6 +38,8 @@ public partial class TestRunner : Node3D
         RunSafely(nameof(FormatPlaceholdersAreDotNetStyle), FormatPlaceholdersAreDotNetStyle);
         RunSafely(nameof(KillingABystanderEndsThePacifistRun), KillingABystanderEndsThePacifistRun);
         RunSafely(nameof(CorpsesStopBehavingLikePeople), CorpsesStopBehavingLikePeople);
+        RunSafely(nameof(BeingArrestedEndsTheDayWithoutKillingBen), BeingArrestedEndsTheDayWithoutKillingBen);
+        RunSafely(nameof(GoreSettingIsHonoured), GoreSettingIsHonoured);
         RunSafely(nameof(DistrictLayoutCoversEveryDayOneToken), DistrictLayoutCoversEveryDayOneToken);
 
         await NoFixtureIsBuriedInSolidGeometry();
@@ -390,6 +392,70 @@ public partial class TestRunner : Node3D
         Check(!victim.IsPhysicsProcessing(), "a corpse should stop running its AI");
 
         victim.QueueFree();
+    }
+
+    /// <summary>
+    /// Surrender has to work. If arrest were unreachable, the only exit from a manhunt
+    /// would be dying, and the whole "you can walk it back" pillar would be a lie.
+    /// </summary>
+    private void BeingArrestedEndsTheDayWithoutKillingBen()
+    {
+        var state = GetNode<GameState>("/root/GameState");
+        var notoriety = FreshNotoriety();
+        state.StartDay(1);
+        notoriety.Report(NotorietySystem.Incident.Kill, Vector3.Zero, 3);
+
+        // The real scene, not a bare CharacterBody3D: BenController._Ready expects its
+        // Head/Camera3D/collider children, and a hand-built stub throws on every one of
+        // them, burying any genuine error in the noise.
+        var scene = GD.Load<PackedScene>("res://scenes/Ben.tscn");
+        Check(scene is not null, "Ben.tscn should load");
+        if (scene is null)
+            return;
+
+        var ben = scene.Instantiate<Player.BenController>();
+        AddChild(ben);
+
+        Check(!ben.IsDetained, "Ben should not start detained");
+        Check(ben.SecondsSinceAttack > 1f, "an idle Ben should read as not resisting");
+
+        ben.NotifyAttacked();
+        Check(ben.SecondsSinceAttack < 0.1f, "attacking should reset the resist timer");
+
+        ben.Detain();
+
+        Check(ben.IsDetained, "Detain should take Ben into custody");
+        Check(!ben.IsDead, "an arrest is not a death");
+
+        state.EndDay();
+        Check(!state.DayRunning, "an arrest should end the day");
+
+        ben.QueueFree();
+    }
+
+    /// <summary>
+    /// The gore setting is a real setting. Off means off - a player who turns it down
+    /// and still gets blood has been ignored.
+    /// </summary>
+    private void GoreSettingIsHonoured()
+    {
+        var cfg = new ConfigFile();
+        cfg.Load(LocaleManager.ConfigPath);
+        var original = cfg.GetValue("ui", "gore", 0);
+
+        foreach (var level in new[] { World.Gore.Level.Full, World.Gore.Level.Reduced, World.Gore.Level.Off })
+        {
+            cfg.SetValue("ui", "gore", (int)level);
+            cfg.Save(LocaleManager.ConfigPath);
+            World.Gore.Invalidate();
+
+            Check(World.Gore.Setting == level,
+                $"gore setting should read back as {level}, got {World.Gore.Setting}");
+        }
+
+        cfg.SetValue("ui", "gore", original);
+        cfg.Save(LocaleManager.ConfigPath);
+        World.Gore.Invalidate();
     }
 
     /// <summary>

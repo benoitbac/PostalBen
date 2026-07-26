@@ -46,6 +46,27 @@ public partial class BenController : CharacterBody3D
     public bool IsDead { get; private set; }
     public bool IsCrouching { get; private set; }
 
+    /// <summary>Taken into custody. Movement is over for the day.</summary>
+    public bool IsDetained { get; private set; }
+
+    /// <summary>
+    /// Time since Ben last swung or fired. Police read this to tell the difference
+    /// between someone resisting and someone who has stopped.
+    /// </summary>
+    public float SecondsSinceAttack { get; private set; } = 999f;
+
+    public void NotifyAttacked() => SecondsSinceAttack = 0f;
+
+    public void Detain()
+    {
+        if (IsDetained)
+            return;
+
+        IsDetained = true;
+        Velocity = Vector3.Zero;
+        Input.MouseMode = Input.MouseModeEnum.Visible;
+    }
+
     private Node3D _head = null!;
     private Camera3D _camera = null!;
     private CollisionShape3D _collider = null!;
@@ -108,7 +129,9 @@ public partial class BenController : CharacterBody3D
 
     public override void _PhysicsProcess(double delta)
     {
-        if (IsDead)
+        SecondsSinceAttack += (float)delta;
+
+        if (IsDead || IsDetained)
             return;
 
         var dt = (float)delta;

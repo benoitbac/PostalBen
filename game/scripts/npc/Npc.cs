@@ -92,6 +92,9 @@ public partial class Npc : CharacterBody3D
 
         Health = Mathf.Max(0f, Health - amount);
 
+        var impact = GlobalPosition + Vector3.Up * 1.1f;
+        World.Gore.Splatter(this, impact, (impact - from).Normalized() with { Y = 0.4f });
+
         if (Health <= 0f)
         {
             Die(from);
@@ -126,6 +129,8 @@ public partial class Npc : CharacterBody3D
         CollisionLayer = 0;
         CollisionMask = 0;
         Velocity = Vector3.Zero;
+
+        World.Gore.Pool(this);
 
         if (_body is null)
             return;

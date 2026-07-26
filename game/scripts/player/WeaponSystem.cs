@@ -70,6 +70,7 @@ public partial class WeaponSystem : Node3D
     private bool _drawnThisLife;
 
     private Camera3D _camera = null!;
+    private BenController? _ben;
     private Node3D _viewmodel = null!;
     private MeshInstance3D _model = null!;
     private OmniLight3D _muzzleFlash = null!;
@@ -83,6 +84,7 @@ public partial class WeaponSystem : Node3D
     public override void _Ready()
     {
         _camera = GetParent<Camera3D>();
+        _ben = GetTree().GetFirstNodeInGroup("player") as BenController;
         _notoriety = GetNode<NotorietySystem>("/root/Notoriety");
         _voice = GetNode<Audio.VoiceBank>("/root/VoiceBank");
 
@@ -116,8 +118,11 @@ public partial class WeaponSystem : Node3D
         _viewmodel.Position = ViewmodelRest with { Z = ViewmodelRest.Z + _kick * 0.16f };
         _viewmodel.Rotation = _viewmodel.Rotation with { X = _kick * 0.9f };
 
-        if (Input.IsActionPressed("attack_primary") && _cooldown <= 0f)
+        if (_ben is { IsDetained: false, IsDead: false } &&
+            Input.IsActionPressed("attack_primary") && _cooldown <= 0f)
+        {
             Attack();
+        }
     }
 
     // ---------------------------------------------------------------- actions
@@ -144,6 +149,9 @@ public partial class WeaponSystem : Node3D
     {
         _cooldown = Held.Cooldown;
         _kick = Held.Kind == Kind.Firearm ? 1f : 0.7f;
+
+        // Police read this to tell resisting apart from surrendering.
+        _ben?.NotifyAttacked();
 
         if (Held.Kind == Kind.Firearm)
         {
