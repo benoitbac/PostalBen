@@ -33,7 +33,7 @@
     { "name": "lot_ne", "pos": [22, 14], "size": [34, 8], "colour": "lot", "cars": 7 },
     { "name": "lot_sw", "pos": [-24, -14], "size": [30, 8], "colour": "lot", "cars": 6 },
     { "name": "lot_far_e", "pos": [62, -14], "size": [26, 8], "colour": "lot", "cars": 4 },
-    { "name": "lawn_house", "pos": [-16, 15], "size": [16, 8], "colour": "grass" },
+    { "name": "yard_house", "pos": [-16, 15], "size": [16, 8], "colour": "sand" },
     { "name": "sand_corner", "pos": [58, 58], "size": [30, 30], "colour": "sand" }
   ],
 
