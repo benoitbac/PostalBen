@@ -35,7 +35,7 @@ invariant suite (34 assertions) guards the design rules in CI.
 
 | # | Component | File(s) | State |
 |---|---|---|---|
-| 1 | District blockout | `game/assets/district/day1.json`, `scripts/world/DistrictBuilder.cs` | ✅ Done — 5 roads, 9 buildings, 7 fixtures, JSON-driven ([ADR-009](DECISIONS.md)) |
+| 1 | District blockout | `game/assets/district/day1.json`, `scripts/world/DistrictBuilder.cs` | ✅ Done — 5 roads, 9 buildings, 7 fixtures, JSON-driven ([ADR-009](DECISIONS.md)). Buildings with a door are built as four walls around an empty interior; scenery stays solid |
 | 2 | Interaction system | `game/scripts/player/Interactor.cs`, `world/Interactable.cs` | ✅ Done — camera raycast on layer 6, localized prompt, occlusion-correct |
 | 3 | World fixtures | `game/scripts/world/{Pickup,Till,Clerk,Door,TokenTrigger,ShopExit}.cs` | ✅ Done — all six Day 1 tokens emitted by real objects |
 | 4 | Inventory | `game/scripts/systems/Inventory.cs` | ✅ Done — per-item paid/unpaid, which is what makes the theft route work |
@@ -100,9 +100,11 @@ Recorded because "it builds" and "it runs" are different claims:
 - `godot --headless --import` — **no errors**, both CSVs compile to `.translation`
 - `godot --headless --quit-after 120` — **exit 0**; district builds (5 roads, 9 buildings,
   7 fixtures), both errands register, VO falls back to subtitle-only as designed
-- `godot --headless -- --run-tests` — **34/34 assertions pass, exit 0**
-- Test suite mutation-checked: breaking `ShopExit.CompletionToken` fails the run with
-  exit 1 and the expected message, so the suite is not vacuous
+- `godot --headless -- --run-tests` — **43/43 assertions pass, exit 0**
+- Test suite mutation-checked twice, so it is not vacuous:
+  - breaking `ShopExit.CompletionToken` → exit 1, `FAIL walking out with the milk should complete the errand`
+  - reverting buildings to solid boxes → exit 1, four `is inside solid geometry` failures
+    naming the exact unreachable fixtures
 - `tools/Build-VoSheet.ps1` — 53 lines × 2 locales, correct UTF-8 output
 - `tools/Get-VoCoverage.ps1` — runs under pwsh 7, writes `vo-coverage.json`
 

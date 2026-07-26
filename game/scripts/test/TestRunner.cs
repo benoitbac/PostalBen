@@ -13,12 +13,17 @@ namespace PostalBen.Test;
 /// Exits non-zero on the first failure so CI catches a regression in the pacifist path
 /// or the dual-route errand design before it reaches a build.
 /// </summary>
-public partial class TestRunner : Node
+public partial class TestRunner : Node3D
 {
     private readonly List<string> _failures = new();
     private int _checks;
 
     public override void _Ready()
+    {
+        _ = RunAll();
+    }
+
+    private async System.Threading.Tasks.Task RunAll()
     {
         GD.Print("=== PostalBen invariant tests ===");
 
@@ -31,6 +36,8 @@ public partial class TestRunner : Node
         RunSafely(nameof(BankRefusesWithoutTheForm), BankRefusesWithoutTheForm);
         RunSafely(nameof(EveryVoLineHasASubtitleInBothLanguages), EveryVoLineHasASubtitleInBothLanguages);
         RunSafely(nameof(DistrictLayoutCoversEveryDayOneToken), DistrictLayoutCoversEveryDayOneToken);
+
+        await NoFixtureIsBuriedInSolidGeometry();
 
         GD.Print($"=== {_checks - _failures.Count}/{_checks} passed ===");
 
@@ -274,6 +281,64 @@ public partial class TestRunner : Node
                           || (token == "shop.settled" && text.Contains("\"shopexit\"", StringComparison.Ordinal));
             Check(present, $"no fixture in the district emits '{token}'");
         }
+    }
+
+    /// <summary>
+    /// Builds the real district and checks that nothing the player has to touch is
+    /// sealed inside world geometry.
+    ///
+    /// This exists because the first version of DistrictBuilder made every building a
+    /// solid box, which put the milk and the till inside a massive cube. Everything
+    /// else still passed - the errand logic was fine, the tokens were wired, the boot
+    /// was clean - and Day 1 was simply impossible to finish. Nothing else in the
+    /// pipeline looks at whether the world is walkable.
+    /// </summary>
+    private async System.Threading.Tasks.Task NoFixtureIsBuriedInSolidGeometry()
+    {
+        var district = new World.DistrictBuilder();
+        AddChild(district);
+
+        // Collision bodies register with the physics server on the next physics step,
+        // so queries before this return nothing and the test would pass vacuously.
+        await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
+        await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
+
+        var space = GetWorld3D().DirectSpaceState;
+        var probed = 0;
+
+        foreach (var node in district.GetChildren())
+        {
+            if (node is not World.Interactable interactable)
+                continue;
+
+            var query = new PhysicsShapeQueryParameters3D
+            {
+                Shape = new SphereShape3D { Radius = 0.35f },
+                Transform = new Transform3D(Basis.Identity, interactable.GlobalPosition),
+                CollisionMask = 1, // world geometry only
+            };
+
+            var overlaps = space.IntersectShape(query, maxResults: 4);
+            probed++;
+
+            Check(overlaps.Count == 0,
+                $"'{interactable.Name}' at {interactable.GlobalPosition} is inside solid " +
+                $"geometry - the player can never reach it");
+        }
+
+        Check(probed > 0, "the district should build at least one interactable to probe");
+
+        // Ben's spawn has to be standing room too.
+        var spawnQuery = new PhysicsShapeQueryParameters3D
+        {
+            Shape = new SphereShape3D { Radius = 0.4f },
+            Transform = new Transform3D(Basis.Identity, new Vector3(-12f, 1f, 6f)),
+            CollisionMask = 1,
+        };
+        Check(space.IntersectShape(spawnQuery, maxResults: 1).Count == 0,
+            "Ben's spawn point is inside solid geometry");
+
+        district.QueueFree();
     }
 
     // ---------------------------------------------------------------- helpers

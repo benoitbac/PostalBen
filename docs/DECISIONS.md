@@ -22,6 +22,14 @@ underneath them. An earlier draft called `ErrandLog.Notify("shop.settled")` dire
 asserted that ErrandLog works and nothing at all about the shop. Verified by mutation:
 changing `ShopExit.CompletionToken` fails the suite with the exact expected message.
 
+The suite also probes the built world with physics shape queries and fails if any
+interactable — or Ben's spawn — sits inside solid geometry. That check exists because the
+first version of `DistrictBuilder` made every building a solid box, burying the milk, the
+till and both bank clerks inside massive cubes. Every other signal was green: it compiled,
+it imported, it booted, the tokens were wired, the errand logic was correct. Day 1 was
+simply impossible to finish, and nothing in the pipeline was looking at whether the world
+was walkable.
+
 **Cost:** the suite runs in the engine rather than a normal .NET test runner, so there is
 no per-test isolation and autoload state has to be reset by hand between cases. Accepted —
 the alternative is mocking Godot, which would test the mocks.

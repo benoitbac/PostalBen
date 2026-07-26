@@ -22,6 +22,7 @@ public partial class Door : Interactable
     public bool IsOpen { get; private set; }
 
     private Node3D _pivot = null!;
+    private CollisionShape3D? _blocker;
     private float _closedYaw;
 
     public override void _Ready()
@@ -29,11 +30,9 @@ public partial class Door : Interactable
         base._Ready();
         PromptKey = "ui.interact.door";
         _pivot = GetNodeOrNull<Node3D>("Pivot") ?? this;
+        _blocker = GetNodeOrNull<CollisionShape3D>("Blocker");
         _closedYaw = _pivot.Rotation.Y;
     }
-
-    public override string CurrentPromptKey() =>
-        WithinOpeningHours() ? "ui.interact.door" : "ui.interact.door";
 
     protected override void OnInteract()
     {
@@ -47,9 +46,18 @@ public partial class Door : Interactable
         IsOpen = !IsOpen;
         var target = _closedYaw + (IsOpen ? Mathf.DegToRad(OpenAngleDegrees) : 0f);
 
+        // Clear the doorway the instant it starts opening, and only seal it once the
+        // leaf has finished closing - otherwise Ben gets shoved by his own front door.
+        if (IsOpen && _blocker is not null)
+            _blocker.SetDeferred(CollisionShape3D.PropertyName.Disabled, true);
+
         var tween = CreateTween();
         tween.SetTrans(Tween.TransitionType.Cubic).SetEase(Tween.EaseType.Out);
         tween.TweenProperty(_pivot, "rotation:y", target, SwingSeconds);
+
+        if (!IsOpen && _blocker is not null)
+            tween.TweenCallback(Callable.From(() =>
+                _blocker.SetDeferred(CollisionShape3D.PropertyName.Disabled, false)));
     }
 
     private bool WithinOpeningHours()

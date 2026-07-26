@@ -100,19 +100,116 @@ public partial class DistrictBuilder : Node3D
         }
     }
 
+    /// <summary>Wall thickness for buildings that have an interior.</summary>
+    private const float WallThickness = 0.4f;
+
+    /// <summary>Clear width of a doorway opening.</summary>
+    private const float DoorGap = 3f;
+
     private void BuildBuilding(Building building)
     {
         var size = new Vector3(building.Size[0], building.Size[1], building.Size[2]);
-        var pos = new Vector3(building.Pos[0], size.Y / 2f, building.Pos[1]);
+        var centre = new Vector2(building.Pos[0], building.Pos[1]);
 
-        AddBox(building.Name, pos, size, Colour(building.Colour), collides: true);
-
+        // A building with a door is somewhere Ben goes inside, so it is built as four
+        // walls around an empty interior. A building without one is scenery and stays a
+        // solid mass - cheaper, and nothing needs to be reachable in there.
         if (building.Door is not { } door)
+        {
+            AddBox(building.Name, new Vector3(centre.X, size.Y / 2f, centre.Y),
+                size, Colour(building.Colour), collides: true);
+            return;
+        }
+
+        BuildWalls(building.Name, centre, size, Colour(building.Colour), door);
+        BuildDoor(building.Name, door);
+    }
+
+    /// <summary>
+    /// Four walls with a gap in whichever face the door sits on.
+    ///
+    /// Deliberately roofless: a closed box has no interior lighting, so the shop would
+    /// be a black void the moment Ben stepped inside. Roofs arrive with the lighting
+    /// pass in the art sprint.
+    /// </summary>
+    private void BuildWalls(string name, Vector2 centre, Vector3 size, string colour, DoorSpec door)
+    {
+        var halfW = size.X / 2f;
+        var halfD = size.Z / 2f;
+        var y = size.Y / 2f;
+
+        var doorPos = new Vector2(door.At[0], door.At[1]);
+
+        // Which face is the door in? Compare its distance to each of the four planes.
+        var toNorth = Mathf.Abs(doorPos.Y - (centre.Y - halfD));
+        var toSouth = Mathf.Abs(doorPos.Y - (centre.Y + halfD));
+        var toWest = Mathf.Abs(doorPos.X - (centre.X - halfW));
+        var toEast = Mathf.Abs(doorPos.X - (centre.X + halfW));
+        var nearest = Mathf.Min(Mathf.Min(toNorth, toSouth), Mathf.Min(toWest, toEast));
+
+        // North / south walls run along X.
+        BuildWallRun($"{name}_n", isAlongX: true, fixedCoord: centre.Y - halfD,
+            from: centre.X - halfW, to: centre.X + halfW, y: y, height: size.Y,
+            colour: colour, gapAt: nearest == toNorth ? doorPos.X : null);
+
+        BuildWallRun($"{name}_s", isAlongX: true, fixedCoord: centre.Y + halfD,
+            from: centre.X - halfW, to: centre.X + halfW, y: y, height: size.Y,
+            colour: colour, gapAt: nearest == toSouth ? doorPos.X : null);
+
+        // East / west walls run along Z, inset so they don't overlap the others.
+        BuildWallRun($"{name}_w", isAlongX: false, fixedCoord: centre.X - halfW,
+            from: centre.Y - halfD + WallThickness, to: centre.Y + halfD - WallThickness,
+            y: y, height: size.Y, colour: colour,
+            gapAt: nearest == toWest ? doorPos.Y : null);
+
+        BuildWallRun($"{name}_e", isAlongX: false, fixedCoord: centre.X + halfW,
+            from: centre.Y - halfD + WallThickness, to: centre.Y + halfD - WallThickness,
+            y: y, height: size.Y, colour: colour,
+            gapAt: nearest == toEast ? doorPos.Y : null);
+    }
+
+    /// <summary>
+    /// One wall, optionally split into two segments around a doorway. A gap that falls
+    /// outside the run is ignored, which keeps a mis-placed door in the layout from
+    /// silently deleting a whole wall.
+    /// </summary>
+    private void BuildWallRun(string name, bool isAlongX, float fixedCoord,
+        float from, float to, float y, float height, string colour, float? gapAt)
+    {
+        if (gapAt is not { } gap || gap - DoorGap / 2f <= from || gap + DoorGap / 2f >= to)
+        {
+            AddWallSegment(name, isAlongX, fixedCoord, from, to, y, height, colour);
+            return;
+        }
+
+        AddWallSegment($"{name}_a", isAlongX, fixedCoord, from, gap - DoorGap / 2f, y, height, colour);
+        AddWallSegment($"{name}_b", isAlongX, fixedCoord, gap + DoorGap / 2f, to, y, height, colour);
+    }
+
+    private void AddWallSegment(string name, bool isAlongX, float fixedCoord,
+        float from, float to, float y, float height, string colour)
+    {
+        var length = to - from;
+        if (length <= 0.05f)
             return;
 
+        var mid = (from + to) / 2f;
+        var pos = isAlongX
+            ? new Vector3(mid, y, fixedCoord)
+            : new Vector3(fixedCoord, y, mid);
+
+        var size = isAlongX
+            ? new Vector3(length, height, WallThickness)
+            : new Vector3(WallThickness, height, length);
+
+        AddBox(name, pos, size, colour, collides: true);
+    }
+
+    private void BuildDoor(string name, DoorSpec door)
+    {
         var doorNode = new Door
         {
-            Name = $"{building.Name}_door",
+            Name = $"{name}_door",
             OpensAtHour = door.OpensAt ?? -1,
             ClosesAtHour = door.ClosesAt ?? -1,
             ClosedVoiceKey = door.OpensAt.HasValue ? "ben.errand.milk.arrive" : string.Empty,
@@ -124,21 +221,24 @@ public partial class DistrictBuilder : Node3D
         var pivot = new Node3D { Name = "Pivot" };
         doorNode.AddChild(pivot);
 
-        var leaf = new MeshInstance3D
+        pivot.AddChild(new MeshInstance3D
         {
             Name = "Leaf",
-            Mesh = new BoxMesh { Size = new Vector3(1.8f, 2.1f, 0.12f) },
-            Position = new Vector3(0.9f, 0f, 0f),
+            Mesh = new BoxMesh { Size = new Vector3(DoorGap, 2.1f, 0.12f) },
+            Position = new Vector3(DoorGap / 2f, 0f, 0f),
             MaterialOverride = Material("#3a3226"),
-        };
-        pivot.AddChild(leaf);
+        });
 
-        var shape = new CollisionShape3D
+        // Direct child of the body: Godot only registers a CollisionShape3D parented
+        // straight to a CollisionObject3D, so hanging it off the pivot would have left
+        // the door with no collision at all. The shape is disabled while open instead
+        // of swinging with the leaf.
+        doorNode.AddChild(new CollisionShape3D
         {
-            Shape = new BoxShape3D { Size = new Vector3(1.8f, 2.1f, 0.3f) },
-            Position = new Vector3(0.9f, 0f, 0f),
-        };
-        pivot.AddChild(shape);
+            Name = "Blocker",
+            Shape = new BoxShape3D { Size = new Vector3(DoorGap, 2.1f, 0.3f) },
+            Position = new Vector3(DoorGap / 2f, 0f, 0f),
+        });
 
         AddChild(doorNode);
     }

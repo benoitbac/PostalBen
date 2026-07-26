@@ -44,15 +44,32 @@ the district, NPC AI and combat are in progress. Track it on the
 
 ### Playing it
 
-```bash
+```powershell
 git clone https://github.com/benoitbac/PostalBen.git
-cd PostalBen/game
-dotnet build PostalBen.csproj
-godot --path . 
+cd PostalBen
+pwsh tools/Play.ps1
 ```
 
-Requires [Godot 4.7.1 (.NET build)](https://godotengine.org/download) and the
-[.NET 9 SDK](https://dotnet.microsoft.com/download).
+That builds the C# assembly, imports assets on first run, and launches. Useful flags:
+`-Locale fr` to force French, `-Tests` to run the invariant suite, `-Editor` to open the
+Godot editor.
+
+| | |
+|---|---|
+| Move | `W` `A` `S` `D` |
+| Look | Mouse |
+| Sprint / crouch | `Shift` / `C` |
+| Interact | `E` |
+| Errand list | `J` |
+| Release mouse | `Esc` |
+
+**Day 1:** get milk, cash the paycheck. The shop is south-east, the bank north-west. Both
+errands are completable without hurting anyone — and the milk has a second solution if you
+would rather not pay for it.
+
+Requires [Godot 4.7.1 — **.NET build**](https://godotengine.org/download) (the standard
+build cannot run C#) and the [.NET 9 SDK](https://dotnet.microsoft.com/download). If Godot
+isn't on your `PATH`, set `$env:GODOT` to the executable and `Play.ps1` will find it.
 
 ### Languages
 
@@ -111,15 +128,33 @@ sont en place ; le quartier, l'IA des PNJ et le combat sont en cours. Suivi sur 
 
 ### Lancer le jeu
 
-```bash
+```powershell
 git clone https://github.com/benoitbac/PostalBen.git
-cd PostalBen/game
-dotnet build PostalBen.csproj
-godot --path .
+cd PostalBen
+pwsh tools/Play.ps1
 ```
 
-Nécessite [Godot 4.7.1 (build .NET)](https://godotengine.org/download) et le
-[SDK .NET 9](https://dotnet.microsoft.com/download).
+Le script compile le C#, importe les assets au premier lancement, et démarre. Options
+utiles : `-Locale fr` pour forcer le français, `-Tests` pour la suite d'invariants,
+`-Editor` pour ouvrir l'éditeur Godot.
+
+| | |
+|---|---|
+| Se déplacer | `W` `A` `S` `D` |
+| Regarder | Souris |
+| Courir / s'accroupir | `Shift` / `C` |
+| Interagir | `E` |
+| Liste de courses | `J` |
+| Libérer la souris | `Échap` |
+
+**Jour 1 :** acheter du lait, encaisser la paie. Le magasin est au sud-est, la banque au
+nord-ouest. Les deux courses se terminent sans faire de mal à personne — et le lait a une
+seconde solution si tu préfères ne pas le payer.
+
+Nécessite [Godot 4.7.1 — **build .NET**](https://godotengine.org/download) (le build
+standard ne peut pas exécuter du C#) et le [SDK .NET 9](https://dotnet.microsoft.com/download).
+Si Godot n'est pas dans le `PATH`, définis `$env:GODOT` vers l'exécutable et `Play.ps1` le
+trouvera.
 
 ### Langues
 

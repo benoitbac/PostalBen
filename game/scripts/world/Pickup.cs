@@ -38,7 +38,17 @@ public partial class Pickup : Interactable
             Errands(this).Notify(CompletionToken);
 
         if (ConsumeOnTake)
+        {
             Visible = false;
+
+            // Hiding the mesh alone would leave an invisible carton of milk to walk
+            // into, so the collision goes with it.
+            foreach (var child in GetChildren())
+            {
+                if (child is CollisionShape3D shape)
+                    shape.SetDeferred(CollisionShape3D.PropertyName.Disabled, true);
+            }
+        }
 
         SetDeferred(PropertyName.Enabled, false);
     }
