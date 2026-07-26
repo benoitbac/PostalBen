@@ -35,6 +35,7 @@ public partial class TestRunner : Node3D
         RunSafely(nameof(OneKillIsNotAManhunt), OneKillIsNotAManhunt);
         RunSafely(nameof(BankRefusesWithoutTheForm), BankRefusesWithoutTheForm);
         RunSafely(nameof(EveryVoLineHasASubtitleInBothLanguages), EveryVoLineHasASubtitleInBothLanguages);
+        RunSafely(nameof(FormatPlaceholdersAreDotNetStyle), FormatPlaceholdersAreDotNetStyle);
         RunSafely(nameof(DistrictLayoutCoversEveryDayOneToken), DistrictLayoutCoversEveryDayOneToken);
 
         await NoFixtureIsBuriedInSolidGeometry();
@@ -332,13 +333,51 @@ public partial class TestRunner : Node3D
         var spawnQuery = new PhysicsShapeQueryParameters3D
         {
             Shape = new SphereShape3D { Radius = 0.4f },
-            Transform = new Transform3D(Basis.Identity, new Vector3(-12f, 1f, 6f)),
+            Transform = new Transform3D(Basis.Identity, new Vector3(-14f, 1f, 12f)),
             CollisionMask = 1,
         };
         Check(space.IntersectShape(spawnQuery, maxResults: 1).Count == 0,
             "Ben's spawn point is inside solid geometry");
 
         district.QueueFree();
+    }
+
+    /// <summary>
+    /// Placeholders must be .NET style. Godot's own formatting uses %s and %d, and it is
+    /// the natural thing to type into a translation CSV - but the C# side formats with
+    /// string.Format, which leaves them untouched. The result ships as a HUD reading
+    /// literally "%d EUR", in both languages, with no error anywhere.
+    /// </summary>
+    private void FormatPlaceholdersAreDotNetStyle()
+    {
+        using var file = FileAccess.Open("res://localization/ui.csv", FileAccess.ModeFlags.Read);
+        Check(file is not null, "ui.csv should be readable");
+        if (file is null)
+            return;
+
+        file.GetCsvLine(); // header
+        var checkedRows = 0;
+
+        while (!file.EofReached())
+        {
+            var row = file.GetCsvLine();
+            if (row.Length < 3 || row[0].Length == 0)
+                continue;
+
+            checkedRows++;
+            for (var col = 1; col < row.Length; col++)
+            {
+                if (System.Text.RegularExpressions.Regex.IsMatch(row[col], "%[sdfx]"))
+                {
+                    _failures.Add(
+                        $"'{row[0]}' uses a GDScript placeholder ('{row[col]}') - " +
+                        "string.Format needs {0}, so this would render literally");
+                }
+            }
+        }
+
+        _checks++;
+        Check(checkedRows > 0, "ui.csv should contain rows to check");
     }
 
     // ---------------------------------------------------------------- helpers

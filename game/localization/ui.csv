@@ -27,9 +27,9 @@ ui.hud.stamina,Stamina,Endurance
 ui.hud.ammo,Ammo,Munitions
 ui.hud.no_weapon,Bare hands,Mains nues
 ui.hud.wanted,Wanted,Recherché
-ui.hud.day,Day %d,Jour %d
-ui.hud.interact_prompt,[E] %s,[E] %s
-ui.hud.money,%d EUR,%d EUR
+ui.hud.day,Day {0},Jour {0}
+ui.hud.interact_prompt,[E] {0},[E] {0}
+ui.hud.money,{0} EUR,{0} EUR
 ui.errand.log_title,Errand List,Liste de courses
 ui.errand.empty,Nothing left. Go home.,Plus rien. Rentre.
 ui.errand.new,New errand,Nouvelle course
@@ -54,7 +54,7 @@ ui.pause.resume,Resume,Reprendre
 ui.pause.save,Save,Sauvegarder
 ui.pause.abandon,Abandon day,Abandonner la journée
 ui.save.saved,Saved,Sauvegardé
-ui.save.slot,Slot %d,Emplacement %d
+ui.save.slot,Slot {0},Emplacement {0}
 ui.death.title,You died,Tu es mort
 ui.death.retry,Restart the day,Recommencer la journée
 ui.death.load,Load save,Charger

@@ -47,18 +47,30 @@ public partial class DistrictBuilder : Node3D
 
         _palette = layout.Palette ?? new Dictionary<string, string>();
 
+        if (layout.Ground is { } ground)
+        {
+            AddBox("ground", new Vector3(0f, -0.5f, 0f),
+                new Vector3(ground.Size, 1f, ground.Size), Colour(ground.Colour), collides: true);
+        }
+
         foreach (var road in layout.Roads ?? new List<Road>())
             BuildRoad(road);
+
+        foreach (var terrace in layout.Terraces ?? new List<Terrace>())
+            BuildTerrace(terrace);
 
         foreach (var building in layout.Buildings ?? new List<Building>())
             BuildBuilding(building);
 
+        foreach (var road in layout.Roads ?? new List<Road>())
+            BuildStreetFurniture(road);
+
         foreach (var fixture in layout.Fixtures ?? new List<Fixture>())
             BuildFixture(fixture);
 
-        GD.Print($"[District] '{layout.Name}' built: " +
-                 $"{layout.Roads?.Count ?? 0} roads, {layout.Buildings?.Count ?? 0} buildings, " +
-                 $"{layout.Fixtures?.Count ?? 0} fixtures");
+        GD.Print($"[District] '{layout.Name}' built: {GetChildCount()} nodes - " +
+                 $"{layout.Roads?.Count ?? 0} roads, {layout.Terraces?.Count ?? 0} terrace runs, " +
+                 $"{layout.Buildings?.Count ?? 0} landmarks, {layout.Fixtures?.Count ?? 0} fixtures");
     }
 
     private static readonly JsonSerializerOptions JsonOpts = new()
@@ -203,6 +215,145 @@ public partial class DistrictBuilder : Node3D
             : new Vector3(WallThickness, height, length);
 
         AddBox(name, pos, size, colour, collides: true);
+    }
+
+    /// <summary>
+    /// A run of terraced buildings along a street frontage, split into units of varying
+    /// width and height.
+    ///
+    /// This exists because density is what makes a street read as a street. Writing
+    /// forty buildings out by hand in the layout would be unmaintainable; a terrace is
+    /// four numbers and produces a whole block face.
+    /// </summary>
+    private void BuildTerrace(Terrace terrace)
+    {
+        var from = new Vector2(terrace.From[0], terrace.From[1]);
+        var to = new Vector2(terrace.To[0], terrace.To[1]);
+        var run = from.DistanceTo(to);
+        if (run < 1f)
+            return;
+
+        var alongX = Mathf.Abs(to.X - from.X) > Mathf.Abs(to.Y - from.Y);
+        var units = Mathf.Max(1, Mathf.RoundToInt(run / terrace.UnitWidth));
+        var unit = run / units;
+
+        // Deterministic pseudo-random heights: the layout must build identically every
+        // run, and Godot's RNG would make the geometry probe flaky.
+        var seed = (int)(from.X * 31 + from.Y * 17 + run);
+
+        for (var i = 0; i < units; i++)
+        {
+            var t = (i + 0.5f) / units;
+            var centre = from.Lerp(to, t);
+
+            var wobble = Mathf.Abs(Mathf.Sin((seed + i * 7919) * 0.7f));
+            var height = Mathf.Lerp(terrace.MinHeight, terrace.MaxHeight, wobble);
+
+            var width = unit - terrace.Gap;
+            var size = alongX
+                ? new Vector3(width, height, terrace.Depth)
+                : new Vector3(terrace.Depth, height, width);
+
+            var pos = new Vector3(centre.X, height / 2f, centre.Y);
+            AddBox($"{terrace.Name}_{i}", pos, size, Colour(terrace.Colour), collides: true);
+
+            // A parapet strip breaks the flat roofline that makes box towns look fake.
+            var parapet = alongX
+                ? new Vector3(width, 0.6f, terrace.Depth + 0.5f)
+                : new Vector3(terrace.Depth + 0.5f, 0.6f, width);
+            AddBox($"{terrace.Name}_{i}_cap", pos with { Y = height + 0.3f }, parapet,
+                Colour(terrace.CapColour ?? terrace.Colour), collides: false);
+
+            AddWindows($"{terrace.Name}_{i}", centre, width, height, terrace.Depth, alongX);
+        }
+    }
+
+    /// <summary>
+    /// Window bands on the street-facing side, one row per storey.
+    ///
+    /// A blank textured wall reads as a boundary wall, not a building. Windows are the
+    /// cheapest cue that tells the eye "this has floors and people in it", and they set
+    /// the storey height that makes the whole street scale correctly.
+    /// </summary>
+    private void AddWindows(string name, Vector2 centre, float width, float height,
+        float depth, bool alongX)
+    {
+        const float StoreyHeight = 3.2f;
+        const float SillHeight = 1.1f;
+        const float WindowHeight = 1.5f;
+        const float Inset = 0.06f;
+
+        var storeys = Mathf.FloorToInt((height - SillHeight) / StoreyHeight);
+        if (storeys < 1)
+            return;
+
+        // Two windows per unit, inset from the party walls.
+        var half = depth / 2f;
+
+        for (var s = 0; s < storeys; s++)
+        {
+            var y = SillHeight + s * StoreyHeight + WindowHeight / 2f;
+            if (y + WindowHeight / 2f > height - 0.4f)
+                break;
+
+            for (var k = -1; k <= 1; k += 2)
+            {
+                var along = k * width * 0.22f;
+
+                // Both faces, so the street reads from either direction.
+                for (var face = -1; face <= 1; face += 2)
+                {
+                    var pos = alongX
+                        ? new Vector3(centre.X + along, y, centre.Y + face * (half - Inset))
+                        : new Vector3(centre.X + face * (half - Inset), y, centre.Y + along);
+
+                    var size = alongX
+                        ? new Vector3(width * 0.28f, WindowHeight, 0.16f)
+                        : new Vector3(0.16f, WindowHeight, width * 0.28f);
+
+                    AddBox($"{name}_win_{s}_{k}_{face}", pos, size, "#1b2026", collides: false);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Lamp posts down both pavements. Cheap, and the single biggest cue that a grey
+    /// corridor is a street rather than a canyon.
+    /// </summary>
+    private void BuildStreetFurniture(Road road)
+    {
+        if (!road.Furniture)
+            return;
+
+        var from = new Vector3(road.From[0], 0f, road.From[1]);
+        var to = new Vector3(road.To[0], 0f, road.To[1]);
+        var length = from.DistanceTo(to);
+        var horizontal = Mathf.Abs(to.X - from.X) > Mathf.Abs(to.Z - from.Z);
+        var offset = road.Width / 2f + PavementWidth * 0.6f;
+
+        var spacing = 18f;
+        var count = Mathf.Max(1, Mathf.FloorToInt(length / spacing));
+
+        for (var i = 0; i <= count; i++)
+        {
+            var point = from.Lerp(to, (float)i / count);
+
+            for (var side = -1; side <= 1; side += 2)
+            {
+                var basePos = horizontal
+                    ? point with { X = point.X, Z = point.Z + side * offset }
+                    : point with { X = point.X + side * offset, Z = point.Z };
+
+                AddBox($"lamp_{i}_{side}_{(int)point.X}_{(int)point.Z}",
+                    basePos with { Y = 2.4f },
+                    new Vector3(0.18f, 4.8f, 0.18f), "#3f4038", collides: false);
+
+                AddBox($"lamphead_{i}_{side}_{(int)point.X}_{(int)point.Z}",
+                    basePos with { Y = 4.9f },
+                    new Vector3(0.7f, 0.22f, 0.35f), "#c9c2a8", collides: false);
+            }
+        }
     }
 
     private void BuildDoor(string name, DoorSpec door)
@@ -351,20 +502,93 @@ public partial class DistrictBuilder : Node3D
     private string Colour(string? key) =>
         key is not null && _palette.TryGetValue(key, out var hex) ? hex : key ?? "#808080";
 
-    /// <summary>Materials are shared per colour - a blockout has ~8 distinct surfaces.</summary>
-    private StandardMaterial3D Material(string hex)
+    /// <summary>
+    /// Resolves a surface name to a material. A name matching a folder under
+    /// assets/textures gets the real CC0 texture set; anything else falls back to a
+    /// flat colour, so a typo shows up as an obviously wrong surface rather than a
+    /// crash.
+    /// </summary>
+    private StandardMaterial3D Material(string surface)
     {
-        if (_materials.TryGetValue(hex, out var cached))
+        if (_materials.TryGetValue(surface, out var cached))
             return cached;
+
+        var material = surface.StartsWith('#')
+            ? FlatMaterial(surface)
+            : TexturedMaterial(surface) ?? FlatMaterial("#8a8a80");
+
+        _materials[surface] = material;
+        return material;
+    }
+
+    private static StandardMaterial3D FlatMaterial(string hex) => new()
+    {
+        AlbedoColor = new Color(hex),
+        Roughness = 0.92f,
+        MetallicSpecular = 0.1f,
+    };
+
+    /// <summary>
+    /// Builds a triplanar material from the fetched maps.
+    ///
+    /// Triplanar because the district is boxes of wildly different sizes generated at
+    /// runtime - there are no UVs to unwrap, and world-space projection makes a 24 m
+    /// wall and a 2 m door post share the same brick scale for free.
+    /// </summary>
+    private static StandardMaterial3D? TexturedMaterial(string name)
+    {
+        var diffuse = LoadMap(name, "diff");
+        if (diffuse is null)
+            return null;
 
         var material = new StandardMaterial3D
         {
-            AlbedoColor = new Color(hex),
-            Roughness = 0.92f,
-            MetallicSpecular = 0.1f,
+            AlbedoTexture = diffuse,
+            Uv1Triplanar = true,
+            Uv1Scale = Vector3.One * TextureScaleFor(name),
+            Roughness = 1f,
+            MetallicSpecular = 0.12f,
+            TextureFilter = BaseMaterial3D.TextureFilterEnum.LinearWithMipmapsAnisotropic,
         };
-        _materials[hex] = material;
+
+        if (LoadMap(name, "nor_gl") is { } normal)
+        {
+            material.NormalEnabled = true;
+            material.NormalTexture = normal;
+            material.NormalScale = 0.8f;
+        }
+
+        if (LoadMap(name, "rough") is { } rough)
+        {
+            material.RoughnessTexture = rough;
+            material.RoughnessTextureChannel = BaseMaterial3D.TextureChannel.Red;
+        }
+
         return material;
+    }
+
+    /// <summary>
+    /// Tiles per metre. Triplanar UVs are world-space, so this is literally "how many
+    /// times the image repeats across a metre" - a brick course has to land near 7 cm
+    /// or the whole district reads as a doll's house built from giant blocks.
+    /// </summary>
+    private static float TextureScaleFor(string name) => name switch
+    {
+        "brick_wall_006" => 1.0f,
+        "painted_plaster_wall" => 0.5f,
+        "concrete_wall_008" => 0.45f,
+        "asphalt_02" => 0.35f,
+        "concrete_floor_worn_001" => 0.5f,
+        "pavement_02" => 0.5f,
+        "grass_medium_01" => 2.0f,
+        "wood_planks_grey" => 1.2f,
+        _ => 0.6f,
+    };
+
+    private static Texture2D? LoadMap(string name, string suffix)
+    {
+        var path = $"res://assets/textures/{name}/{name}_{suffix}_1k.jpg";
+        return ResourceLoader.Exists(path) ? GD.Load<Texture2D>(path) : null;
     }
 
     // ------------------------------------------------------------------ schema
@@ -373,7 +597,9 @@ public partial class DistrictBuilder : Node3D
     {
         public string? Name { get; set; }
         public Dictionary<string, string>? Palette { get; set; }
+        public GroundSpec? Ground { get; set; }
         public List<Road>? Roads { get; set; }
+        public List<Terrace>? Terraces { get; set; }
         public List<Building>? Buildings { get; set; }
         public List<Fixture>? Fixtures { get; set; }
     }
@@ -383,6 +609,27 @@ public partial class DistrictBuilder : Node3D
         public float[] From { get; set; } = { 0, 0 };
         public float[] To { get; set; } = { 0, 0 };
         public float Width { get; set; } = 10f;
+        public bool Furniture { get; set; } = true;
+    }
+
+    private sealed class GroundSpec
+    {
+        public float Size { get; set; } = 200f;
+        public string? Colour { get; set; }
+    }
+
+    private sealed class Terrace
+    {
+        public string Name { get; set; } = "terrace";
+        public float[] From { get; set; } = { 0, 0 };
+        public float[] To { get; set; } = { 0, 0 };
+        public float Depth { get; set; } = 12f;
+        public float UnitWidth { get; set; } = 9f;
+        public float Gap { get; set; } = 0.6f;
+        public float MinHeight { get; set; } = 7f;
+        public float MaxHeight { get; set; } = 14f;
+        public string? Colour { get; set; }
+        public string? CapColour { get; set; }
     }
 
     private sealed class Building

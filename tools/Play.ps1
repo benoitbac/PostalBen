@@ -92,20 +92,25 @@ try {
         return
     }
 
-    $godotArgs = @()
-    if ($Locale) { $godotArgs += @('--language', $Locale) }
+    # Everything after `--` reaches the game as user args; LocaleManager reads --locale
+    # from there. Godot's own --language flag does not exist, and an engine-level locale
+    # would be overwritten by LocaleManager on startup anyway.
+    $userArgs = @()
+    if ($Locale) { $userArgs += @('--locale', $Locale) }
 
     if ($Tests) {
         Write-Host "Running invariant tests..." -ForegroundColor Cyan
-        & $godot --headless @godotArgs -- --run-tests
+        & $godot --headless -- --run-tests @userArgs
         exit $LASTEXITCODE
     }
 
     Write-Host ""
     Write-Host "Controls: WASD move, mouse look, Shift sprint, C crouch," -ForegroundColor Green
     Write-Host "          E interact, J errand list, Esc release mouse." -ForegroundColor Green
+    if ($Locale) { Write-Host "Language forced to '$Locale' for this run only." -ForegroundColor Green }
     Write-Host ""
-    & $godot @godotArgs
+
+    if ($userArgs.Count -gt 0) { & $godot -- @userArgs } else { & $godot }
 }
 finally {
     Pop-Location

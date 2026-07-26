@@ -1,68 +1,86 @@
 {
   "name": "Day 1 district",
-  "note": "Grey-box layout. Distances are tuned so 'get milk' reads as a four-block walk. Replaced by authored geometry in the art pass; the fixtures list stays.",
+  "note": "Streets are 11 m wide with 3 m pavements. Terraces sit 13.5 m off each centreline (depth 9), so blocks build up back-to-back and the street reads as a corridor rather than a field. Landmarks are carved out of the terrace runs by hand.",
 
   "palette": {
-    "road": "#2b2c26",
-    "pavement": "#4a4b40",
-    "house": "#6b5a41",
-    "shop": "#5c6b47",
-    "bank": "#565a63",
-    "civic": "#4f4636",
-    "park": "#3d4a30"
+    "road": "asphalt_02",
+    "pavement": "concrete_floor_worn_001",
+    "plaza": "pavement_02",
+    "house": "brick_wall_006",
+    "shop": "painted_plaster_wall",
+    "bank": "concrete_wall_008",
+    "civic": "concrete_wall_008",
+    "terrace": "brick_wall_006",
+    "cap": "concrete_wall_008",
+    "grass": "grass_medium_01",
+    "wood": "wood_planks_grey"
   },
 
+  "ground": { "size": 260, "colour": "plaza" },
+
   "roads": [
-    { "from": [-90, 0], "to": [90, 0], "width": 12 },
-    { "from": [0, -70], "to": [0, 70], "width": 12 },
-    { "from": [-90, -40], "to": [90, -40], "width": 10 },
-    { "from": [-40, -70], "to": [-40, 70], "width": 10 },
-    { "from": [40, -70], "to": [40, 70], "width": 10 }
+    { "from": [-70, 0], "to": [70, 0], "width": 11 },
+    { "from": [-70, -36], "to": [70, -36], "width": 11 },
+    { "from": [-70, 36], "to": [70, 36], "width": 11 },
+    { "from": [0, -70], "to": [0, 70], "width": 11 },
+    { "from": [-36, -70], "to": [-36, 70], "width": 11 },
+    { "from": [36, -70], "to": [36, 70], "width": 11 }
+  ],
+
+  "terraces": [
+    { "name": "t_ne", "from": [12, 13.5], "to": [34, 13.5], "depth": 9, "minHeight": 8, "maxHeight": 15, "colour": "terrace", "capColour": "cap" },
+    { "name": "t_ne2", "from": [40, 13.5], "to": [66, 13.5], "depth": 9, "minHeight": 9, "maxHeight": 17, "colour": "civic", "capColour": "cap" },
+    { "name": "t_sw", "from": [-34, -13.5], "to": [-12, -13.5], "depth": 9, "minHeight": 7, "maxHeight": 13, "colour": "terrace", "capColour": "cap" },
+    { "name": "t_sw2", "from": [-66, -13.5], "to": [-40, -13.5], "depth": 9, "minHeight": 8, "maxHeight": 16, "colour": "civic", "capColour": "cap" },
+    { "name": "t_se2", "from": [40, -13.5], "to": [66, -13.5], "depth": 9, "minHeight": 8, "maxHeight": 14, "colour": "terrace", "capColour": "cap" },
+    { "name": "t_nw_far", "from": [-66, 13.5], "to": [-56, 13.5], "depth": 9, "minHeight": 9, "maxHeight": 14, "colour": "civic", "capColour": "cap" },
+    { "name": "t_back_s", "from": [-34, -22.5], "to": [12, -22.5], "depth": 9, "minHeight": 7, "maxHeight": 12, "colour": "terrace", "capColour": "cap" },
+    { "name": "t_back_n", "from": [-6, 22.5], "to": [30, 22.5], "depth": 9, "minHeight": 7, "maxHeight": 13, "colour": "terrace", "capColour": "cap" },
+    { "name": "t_far_s", "from": [-30, -49.5], "to": [30, -49.5], "depth": 9, "minHeight": 8, "maxHeight": 15, "colour": "civic", "capColour": "cap" },
+    { "name": "t_far_n", "from": [-30, 49.5], "to": [30, 49.5], "depth": 9, "minHeight": 8, "maxHeight": 15, "colour": "terrace", "capColour": "cap" },
+    { "name": "t_east_col", "from": [49.5, -30], "to": [49.5, 30], "depth": 9, "minHeight": 9, "maxHeight": 18, "colour": "civic", "capColour": "cap" },
+    { "name": "t_west_col", "from": [-49.5, -30], "to": [-49.5, -8], "depth": 9, "minHeight": 8, "maxHeight": 14, "colour": "terrace", "capColour": "cap" },
+    { "name": "t_east_col2", "from": [49.5, 42], "to": [49.5, 64], "depth": 9, "minHeight": 8, "maxHeight": 16, "colour": "civic", "capColour": "cap" },
+    { "name": "t_west_col2", "from": [-49.5, 42], "to": [-49.5, 64], "depth": 9, "minHeight": 8, "maxHeight": 16, "colour": "terrace", "capColour": "cap" }
   ],
 
   "buildings": [
     {
       "name": "house",
-      "pos": [-12, 14],
-      "size": [12, 5, 10],
+      "note": "Ben's. Door faces the main street; he spawns on the path outside it.",
+      "pos": [-14, 22],
+      "size": [12, 7, 11],
       "colour": "house",
-      "door": { "at": [-12, 8.6], "facing": 0 },
-      "interiorTrigger": { "token": "", "size": [10, 4, 8] }
+      "door": { "at": [-14, 16.5], "facing": 0 }
     },
     {
       "name": "shop",
-      "pos": [28, -14],
-      "size": [16, 6, 14],
+      "pos": [26, -20],
+      "size": [16, 7, 13],
       "colour": "shop",
-      "door": { "at": [28, -6.6], "facing": 0, "opensAt": 8, "closesAt": 20 }
+      "door": { "at": [26, -13.5], "facing": 0, "opensAt": 8, "closesAt": 20 }
     },
     {
       "name": "bank",
-      "pos": [-34, 22],
-      "size": [20, 8, 16],
+      "pos": [-44, 20],
+      "size": [18, 9, 14],
       "colour": "bank",
-      "door": { "at": [-34, 13.6], "facing": 0, "opensAt": 9, "closesAt": 17 }
-    },
-    { "name": "block_a", "pos": [-62, -18], "size": [22, 11, 18], "colour": "civic" },
-    { "name": "block_b", "pos": [62, 20], "size": [24, 14, 20], "colour": "civic" },
-    { "name": "block_c", "pos": [16, 44], "size": [18, 9, 16], "colour": "house" },
-    { "name": "block_d", "pos": [-64, 50], "size": [20, 12, 18], "colour": "civic" },
-    { "name": "block_e", "pos": [58, -46], "size": [22, 10, 18], "colour": "house" },
-    { "name": "park_wall", "pos": [-14, -50], "size": [30, 1, 24], "colour": "park" }
+      "door": { "at": [-44, 13], "facing": 0, "opensAt": 9, "closesAt": 17 }
+    }
   ],
 
   "fixtures": [
     {
       "type": "trigger",
       "note": "Crossing the shop threshold.",
-      "pos": [28, 1.5, -7],
+      "pos": [26, 1.5, -15],
       "size": [7, 3, 3],
       "token": "shop.entered"
     },
     {
       "type": "pickup",
       "note": "The milk, on a shelf at the back.",
-      "pos": [33, 1.1, -18],
+      "pos": [31, 1.1, -23],
       "size": [0.5, 0.8, 0.5],
       "item": "milk",
       "token": "milk.acquired",
@@ -71,33 +89,33 @@
     },
     {
       "type": "till",
-      "note": "Reads 'Wait in line' until he is holding unpaid milk, then 'Pay'.",
-      "pos": [23, 1.0, -16],
+      "note": "Reads 'wait in line' until he is holding unpaid milk, then 'pay'.",
+      "pos": [21, 1.0, -21],
       "size": [3, 1.1, 1.2],
       "item": "milk",
       "price": 3,
       "token": "shop.settled",
       "idleVoice": "ben.queue.wait_long",
-      "colour": "#7a6a4f"
+      "colour": "wood"
     },
     {
       "type": "shopexit",
-      "note": "Second route to shop.settled. Leaving with unpaid milk costs notoriety, not money.",
-      "pos": [28, 1.5, -6],
+      "note": "Second route to shop.settled. Leaving unpaid costs notoriety, not money.",
+      "pos": [26, 1.5, -12.6],
       "size": [7, 3, 2],
       "witnesses": 2
     },
     {
       "type": "trigger",
       "note": "Crossing the bank threshold.",
-      "pos": [-34, 1.5, 12.5],
+      "pos": [-44, 1.5, 14.5],
       "size": [8, 3, 3],
       "token": "bank.entered"
     },
     {
       "type": "clerk",
       "note": "The first clerk. Exists to hand over a form.",
-      "pos": [-40, 1.0, 26],
+      "pos": [-49, 1.0, 24],
       "size": [1.4, 1.8, 1.4],
       "gives": "form",
       "token": "bank.form_taken",
@@ -108,7 +126,7 @@
     {
       "type": "clerk",
       "note": "The second clerk. Will not act without the first clerk's form.",
-      "pos": [-28, 1.0, 26],
+      "pos": [-39, 1.0, 24],
       "size": [1.4, 1.8, 1.4],
       "requires": "form",
       "consumes": "form",
