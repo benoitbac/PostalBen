@@ -52,6 +52,9 @@ async function load() {
             + "catégorie, de mémoire, et aucun chiffre n'y figure pour cette raison. Utilisable "
             + "pour se situer, pas pour décider — à vérifier avant tout usage externe.",
     todo: "Brouillon. Cette page n'a pas encore été relue par quelqu'un qui connaît ce marché.",
+    mixed: "Le paysage ci-dessous est établi de mémoire, au niveau de la catégorie. Le face-à-face, lui, "
+         + "est MESURÉ : le banc est dans le dépôt et se rejoue. Les deux ne se lisent pas pareil — les "
+         + "chiffres engagent, la carte du marché situe.",
   };
   const prov = PROV[m.provenance ?? 'recalled'];
   if (prov) { $('provenance').hidden = false; $('provenance').textContent = prov; }
