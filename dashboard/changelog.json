@@ -1,0 +1,92 @@
+{
+  "updated": "2026-08-09",
+  "focus": "À ÉCRIRE — aucune commande ne donne ça.",
+  "narrative": "À ÉCRIRE — aucune commande ne donne ça.",
+  "goal": 12,
+  "history": [
+    {
+      "label": "07-25",
+      "done": 5
+    },
+    {
+      "label": "07-26",
+      "done": 12
+    }
+  ],
+  "sessions": [
+    {
+      "date": "2026-07-26",
+      "title": "7 commit(s)",
+      "items": [
+        {
+          "tag": "git",
+          "status": "done",
+          "text": "﻿fix(district): buildings were solid, so Day 1 was impossible to finish"
+        },
+        {
+          "tag": "git",
+          "status": "done",
+          "text": "﻿feat(district): CC0 textures, real density, and a HUD that shows numbers"
+        },
+        {
+          "tag": "git",
+          "status": "done",
+          "text": "﻿feat(world): retheme to arid suburbia and put people on the streets"
+        },
+        {
+          "tag": "git",
+          "status": "done",
+          "text": "﻿fix(world): dirt yard instead of lawn outside Ben's house"
+        },
+        {
+          "tag": "git",
+          "status": "done",
+          "text": "﻿feat(combat): weapons, death, and police that actually respond"
+        },
+        {
+          "tag": "git",
+          "status": "done",
+          "text": "﻿feat(combat): blood, and police who arrest instead of only shooting"
+        },
+        {
+          "tag": "git",
+          "status": "done",
+          "text": "﻿feat(gameplay): queues, so the errand is finally an obstacle"
+        }
+      ]
+    },
+    {
+      "date": "2026-07-25",
+      "title": "5 commit(s)",
+      "items": [
+        {
+          "tag": "git",
+          "status": "done",
+          "text": "feat: PostalBen foundations - engine, bilingual pipeline, core systems"
+        },
+        {
+          "tag": "git",
+          "status": "done",
+          "text": "fix(ci): deterministic generated files and warm-import assertion"
+        },
+        {
+          "tag": "git",
+          "status": "done",
+          "text": "﻿fix(ci): build Debug so Godot can load the C# assembly"
+        },
+        {
+          "tag": "git",
+          "status": "done",
+          "text": "﻿fix(dashboard): readable labels on short bars and a visible empty VO track"
+        },
+        {
+          "tag": "git",
+          "status": "done",
+          "text": "﻿feat(district): interaction system, world fixtures and a playable Day 1"
+        }
+      ]
+    }
+  ],
+  "next": [],
+  "_seed": "Journal et burn-up reconstitués depuis l'historique git. Le focus, le récit et « la suite » restent à écrire."
+}

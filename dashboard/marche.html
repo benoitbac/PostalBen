@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>le marché</title>
+<!--
+  La page « état de l'art » côté marché : qui existe déjà, ce qu'ils ne font
+  pas, et quelle case reste vide. Rendue depuis marche.json — la prose est
+  écrite à la main, parce qu'aucune commande ne donne un paysage concurrentiel.
+
+  Coque identique dans les 18 dépôts. NE PAS ÉDITER ICI.
+-->
+<link rel="stylesheet" href="cockpit.css">
+
+<header>
+  <div class="brand">
+    <span class="dot"></span>
+    <h1 id="title">Le marché</h1>
+  </div>
+  <div class="hstats">
+    <span class="links" id="links"></span>
+    <span id="updated" class="k">—</span>
+  </div>
+</header>
+
+<main>
+  <section class="thesis">
+    <div class="shead">
+      <h2>La position</h2>
+      <span class="note">ce qu'on affirme du terrain, en une phrase</span>
+    </div>
+    <p class="rule" id="claim"></p>
+    <div class="kpis" id="size"></div>
+  </section>
+
+  <section id="families-section" hidden>
+    <div class="shead">
+      <h2>Qui existe déjà</h2>
+      <span class="note">et surtout : ce que chacun ne fait pas</span>
+    </div>
+    <div class="scroller"><table class="data" id="families"></table></div>
+  </section>
+
+  <section id="gap-section" hidden>
+    <div class="shead">
+      <h2>La case vide</h2>
+      <span class="note">nommée, et bornée</span>
+    </div>
+    <p class="lede" id="gap"></p>
+    <div id="sections" class="prose"></div>
+  </section>
+
+  <section id="reserve-section" hidden>
+    <div class="shead">
+      <h2>Réserve</h2>
+      <span class="note">ce que cette page ne sait pas</span>
+    </div>
+    <ul class="plain" id="reserve"></ul>
+  </section>
+
+  <div id="empty"></div>
+</main>
+
+<footer>
+  Piloté par <code>marche.json</code>. Les chiffres non mesurés y sont marqués comme tels et
+  s'affichent en gris : une page de position qui triche sur un seul perd le droit d'être crue sur le reste.
+</footer>
+
+<script src="marche.js"></script>
+</html>
