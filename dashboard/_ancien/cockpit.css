@@ -260,18 +260,3 @@ table.data td[data-s="bad"] { color: var(--rose); }
 
 footer { padding: 0 24px 40px; color: var(--zinc-600); font-size: 10.5px; max-width: 1400px; margin: 0 auto; }
 footer code { color: var(--zinc-500); }
-
-/* ---- face à face ------------------------------------------------------ */
-/* La colonne « perf mesurée » existe pour pouvoir écrire « jamais mesuré »
-   dedans. Un comparatif qui n'a pas de case pour l'ignorance en fabrique. */
-.verdicts { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-top: 16px; }
-.vd { border: 1px solid var(--line-800); border-radius: 6px; background: var(--panel-deep); padding: 12px; display: flex; flex-direction: column; gap: 6px; }
-.vd__top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-.vd__name { font-size: 12.5px; font-weight: 700; color: var(--zinc-100); }
-.vd__tag { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; border: 1px solid currentColor; border-radius: 4px; padding: 0 5px; white-space: nowrap; }
-.vd__tag[data-s="neighbour"] { color: var(--emerald); }
-.vd__tag[data-s="partial"] { color: var(--amber); }
-.vd__tag[data-s="off"] { color: var(--zinc-500); }
-.vd__text { font-size: 11.5px; color: var(--zinc-300); }
-.vd__todo { font-size: 10.5px; color: var(--amber); border-left: 2px solid var(--amber-dim); padding-left: 8px; margin-top: auto; }
-table.data td.self { color: var(--emerald); font-weight: 700; }

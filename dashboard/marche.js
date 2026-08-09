@@ -87,6 +87,34 @@ async function load() {
         .join('')}</tbody>`;
   }
 
+  // Face à face. Les axes sont ceux qu'on peut remplir SANS banc : ce que c'est,
+  // sur quoi ça tourne, ce qu'il garde en mémoire, ce qu'on lui confie. La perf
+  // a sa colonne quand même — pour y écrire « jamais mesuré » là où c'est le cas.
+  const V = m.versus;
+  if (V && (V.axes ?? []).length) {
+    $('versus-section').hidden = false;
+    $('versus-note').textContent = V.note ?? '';
+    const cols = V.contenders ?? [];
+    $('versus').innerHTML =
+      `<thead><tr><th></th>${cols.map((c, i) => `<th${i === 0 ? ' style="color:var(--emerald)"' : ''}>${esc(c)}</th>`).join('')}</tr></thead>`
+      + `<tbody>${(V.axes ?? [])
+          .map((a) => `<tr><td style="color:var(--zinc-100);font-weight:700">${esc(a.t)}</td>`
+            + (a.v ?? []).map((x, i) => `<td style="white-space:normal"${i === 0 ? ' class="self"' : ''}>${rich(x)}</td>`).join('')
+            + '</tr>')
+          .join('')}</tbody>`;
+
+    $('verdicts').innerHTML = (V.verdicts ?? [])
+      .map((v) => `<div class="vd">
+          <div class="vd__top">
+            <span class="vd__name">${esc(v.name)}</span>
+            <span class="vd__tag" data-s="${esc(v.state ?? 'off')}">${esc(v.tag ?? '')}</span>
+          </div>
+          <div class="vd__text">${rich(v.text ?? '')}</div>
+          ${v.todo ? `<div class="vd__todo">pour pouvoir comparer — ${esc(v.todo)}</div>` : ''}
+        </div>`)
+      .join('');
+  }
+
   if (m.gap || (m.sections ?? []).length) {
     $('gap-section').hidden = false;
     $('gap').innerHTML = rich(m.gap ?? '');
