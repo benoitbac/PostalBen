@@ -43,6 +43,19 @@ async function load() {
   $('title').textContent = name ? `${name} — le marché` : (m.title ?? 'Le marché');
   document.title = `${name || 'projet'} — le marché`;
   $('updated').textContent = m.updated ? `mis à jour ${m.updated}` : '—';
+  // D'où vient cette page se dit AVANT ce qu'elle affirme. Une analyse écrite de
+  // mémoire et une analyse sourcée se lisent différemment, et le lecteur ne peut
+  // pas faire la différence si on ne la lui donne pas.
+  const PROV = {
+    sourced: null,
+    recalled: "Page établie sans relecture de source : les acteurs sont nommés au niveau de la "
+            + "catégorie, de mémoire, et aucun chiffre n'y figure pour cette raison. Utilisable "
+            + "pour se situer, pas pour décider — à vérifier avant tout usage externe.",
+    todo: "Brouillon. Cette page n'a pas encore été relue par quelqu'un qui connaît ce marché.",
+  };
+  const prov = PROV[m.provenance ?? 'recalled'];
+  if (prov) { $('provenance').hidden = false; $('provenance').textContent = prov; }
+
   $('claim').innerHTML = rich(m.claim ?? '');
 
   // Un chiffre non mesuré ne prend pas la couleur d'un chiffre mesuré. C'est la
