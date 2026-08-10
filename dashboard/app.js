@@ -306,6 +306,61 @@ function renderTest(test) {
 }
 
 // ---------------------------------------------------------------------
+// Télémétrie — une tuile par série, la courbe en dessous.
+//
+// Un seul graphe à six courbes superposées serait plus compact et illisible :
+// ces séries n'ont ni la même unité ni la même échelle. Et la variation affichée
+// est celle depuis le PREMIER point de la fenêtre, pas depuis la veille — un
+// delta quotidien sur un projet qu'on touche deux fois par semaine ne mesure
+// que le hasard du jour où on regarde.
+// ---------------------------------------------------------------------
+function sparkline(values, better) {
+  if (values.length < 2) return '';
+  const W = 168, H = 34, pad = 3;
+  const min = Math.min(...values), max = Math.max(...values);
+  const span = max - min || 1;
+  const px = (i) => pad + (i / (values.length - 1)) * (W - pad * 2);
+  const py = (v) => H - pad - ((v - min) / span) * (H - pad * 2);
+  const pts = values.map((v, i) => `${px(i).toFixed(1)},${py(v).toFixed(1)}`).join(' ');
+  const colour = better === 'flat' ? '#71717a' : better === 'down' ? '#fb7185' : '#34d399';
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none" role="img" aria-hidden="true">`
+    + `<polygon points="${pad},${H - pad} ${pts} ${px(values.length - 1).toFixed(1)},${H - pad}" fill="${colour}" fill-opacity="0.12"/>`
+    + `<polyline points="${pts}" fill="none" stroke="${colour}" stroke-width="1.6"/>`
+    + `<circle cx="${px(values.length - 1).toFixed(1)}" cy="${py(values[values.length - 1]).toFixed(1)}" r="2.4" fill="${colour}"/>`
+    + '</svg>';
+}
+
+function renderTelemetry(tel) {
+  const points = tel?.points ?? [];
+  if (points.length < 1) return;
+  $('telemetry-section').hidden = false;
+  $('telemetry-span').textContent =
+    points.length === 1
+      ? `premier point le ${points[0].date} — la courbe arrive demain`
+      : `${points.length} points, du ${points[0].date} au ${points[points.length - 1].date}`;
+
+  $('telemetry').innerHTML = (tel.series ?? [])
+    .map((s) => {
+      const values = points.map((p) => p[s.k]).filter((v) => typeof v === 'number');
+      if (!values.length) return '';
+      const last = values[values.length - 1];
+      const delta = last - values[0];
+      // Une série « moins c'est mieux » inverse le sens de la couleur, pas du signe.
+      const dir = delta === 0 ? 'flat' : (s.lowerIsBetter ? (delta < 0 ? 'up' : 'down') : (delta > 0 ? 'up' : 'down'));
+      return `<div class="spark">
+        <div class="spark__top">
+          <span class="spark__v">${esc(last)}</span>
+          <span class="spark__d" data-s="${dir}">${delta > 0 ? '+' : ''}${values.length > 1 ? esc(delta) : '—'}</span>
+        </div>
+        <div class="spark__l">${esc(s.t ?? s.k)}</div>
+        ${s.why ? `<div class="spark__w">${esc(s.why)}</div>` : ''}
+        ${sparkline(values, dir)}
+      </div>`;
+    })
+    .join('');
+}
+
+// ---------------------------------------------------------------------
 // Le rail de liens. Les deux pages sœurs y entrent toutes seules quand leur
 // fichier existe : les câbler à la main dans dix-huit roadmap.json, c'est
 // dix-huit occasions d'en oublier une.
@@ -329,14 +384,15 @@ function renderLinks(roadmap, has) {
 }
 
 async function load() {
-  const [roadmap, changelog, system, vision, bench, test, marche] = await Promise.all(
+  const [roadmap, changelog, system, vision, bench, test, marche, telemetry] = await Promise.all(
     ['roadmap.json', 'changelog.json', 'system.json', 'vision.json',
-     'bench.json', 'test.json', 'marche.json'].map(grab),
+     'bench.json', 'test.json', 'marche.json', 'telemetry.json'].map(grab),
   );
 
   renderVision(vision);
   renderBench(bench);
   renderTest(test);
+  renderTelemetry(telemetry);
   renderLinks(roadmap, { marche: !!marche });
 
   if (roadmap) {

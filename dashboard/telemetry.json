@@ -1,0 +1,57 @@
+{
+  "series": [
+    {
+      "k": "commits",
+      "t": "commits",
+      "why": "le projet avance-t-il encore"
+    },
+    {
+      "k": "dirty",
+      "t": "non commité",
+      "why": "du travail qui dort hors de git",
+      "lowerIsBetter": true
+    },
+    {
+      "k": "files",
+      "t": "fichiers de code",
+      "why": "ce qu'il pèse"
+    },
+    {
+      "k": "docs",
+      "t": "documents",
+      "why": "ce qu'il explique de lui-même"
+    },
+    {
+      "k": "tasksDone",
+      "t": "tâches faites",
+      "why": "ce que son cockpit déclare"
+    },
+    {
+      "k": "conformity",
+      "t": "conformité %",
+      "why": "ce que la matrice du parc en dit"
+    }
+  ],
+  "points": [
+    {
+      "date": "2026-08-09",
+      "commits": 16,
+      "dirty": 13,
+      "files": 42,
+      "docs": 10,
+      "tasksDone": 0,
+      "conformity": 60
+    },
+    {
+      "date": "2026-08-10",
+      "commits": 16,
+      "dirty": 20,
+      "files": 42,
+      "docs": 10,
+      "tasksDone": 0,
+      "conformity": 60
+    }
+  ],
+  "updated": "2026-08-10",
+  "note": "un point par jour, mesuré — jamais saisi. Les séries propres au projet viennent de son ops/telemetry.json."
+}

@@ -275,3 +275,19 @@ footer code { color: var(--zinc-500); }
 .vd__text { font-size: 11.5px; color: var(--zinc-300); }
 .vd__todo { font-size: 10.5px; color: var(--amber); border-left: 2px solid var(--amber-dim); padding-left: 8px; margin-top: auto; }
 table.data td.self { color: var(--emerald); font-weight: 700; }
+
+/* ---- télémétrie -------------------------------------------------------- */
+/* Une série par tuile, la valeur du jour en gros, la courbe en dessous. Un
+   graphe unique à six courbes superposées serait plus compact et illisible :
+   ces séries n'ont ni la même unité ni la même échelle. */
+.sparks { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+.spark { border: 1px solid var(--line-800); border-radius: 6px; background: var(--panel-deep); padding: 10px 12px; }
+.spark__top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.spark__v { font-size: 17px; font-weight: 700; color: var(--zinc-100); font-variant-numeric: tabular-nums; }
+.spark__d { font-size: 10.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.spark__d[data-s="up"] { color: var(--emerald); }
+.spark__d[data-s="down"] { color: var(--rose); }
+.spark__d[data-s="flat"] { color: var(--zinc-500); }
+.spark__l { font-size: 10px; color: var(--zinc-400); text-transform: uppercase; letter-spacing: .09em; margin-top: 2px; }
+.spark__w { font-size: 10px; color: var(--zinc-600); margin-top: 1px; }
+.spark svg { display: block; margin-top: 8px; }
