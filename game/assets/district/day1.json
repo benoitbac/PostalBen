@@ -1,0 +1,176 @@
+{
+  "name": "Paradise Heights - Day 1",
+  "note": "Arid suburban sprawl, not a European high street. Buildings are one or two storeys and very wide, set back behind parking aprons, on 14 m roads. Everything is stucco, concrete and corrugated iron bleached by sun.",
+
+  "palette": {
+    "road": "asphalt_04",
+    "pavement": "concrete_floor_worn_001",
+    "lot": "concrete_pavers_02",
+    "dirt": "dry_ground_rocks",
+    "sand": "sand_02",
+    "stucco": "painted_plaster_wall",
+    "concrete": "concrete_layers_02",
+    "metal": "corrugated_iron_02",
+    "brick": "red_brick_03",
+    "grass": "grass_medium_01",
+    "wood": "wood_planks_grey"
+  },
+
+  "ground": { "size": 300, "colour": "dirt" },
+
+  "roads": [
+    { "from": [-90, 0], "to": [90, 0], "width": 14 },
+    { "from": [-90, -40], "to": [90, -40], "width": 14 },
+    { "from": [-90, 40], "to": [90, 40], "width": 14 },
+    { "from": [0, -90], "to": [0, 90], "width": 14 },
+    { "from": [-40, -90], "to": [-40, 90], "width": 14 },
+    { "from": [40, -90], "to": [40, 90], "width": 14 }
+  ],
+
+  "lots": [
+    { "name": "lot_shop", "pos": [28, -13], "size": [32, 9], "colour": "lot", "cars": 6 },
+    { "name": "lot_bank", "pos": [-44, 13], "size": [28, 9], "colour": "lot", "cars": 5 },
+    { "name": "lot_ne", "pos": [22, 14], "size": [34, 8], "colour": "lot", "cars": 7 },
+    { "name": "lot_sw", "pos": [-24, -14], "size": [30, 8], "colour": "lot", "cars": 6 },
+    { "name": "lot_far_e", "pos": [62, -14], "size": [26, 8], "colour": "lot", "cars": 4 },
+    { "name": "yard_house", "pos": [-16, 15], "size": [16, 8], "colour": "sand" },
+    { "name": "sand_corner", "pos": [58, 58], "size": [30, 30], "colour": "sand" }
+  ],
+
+  "blocks": [
+    { "name": "shop_shelf_a", "pos": [24, 0, -30], "size": [12, 1.6, 0.9], "colour": "metal" },
+    { "name": "shop_shelf_b", "pos": [24, 0, -27], "size": [12, 1.6, 0.9], "colour": "metal" },
+    { "name": "shop_shelf_c", "pos": [33, 0, -24], "size": [0.9, 1.6, 6], "colour": "metal" },
+    { "name": "shop_counter", "pos": [20, 0, -21], "size": [5.5, 1.05, 1.4], "colour": "wood" },
+    { "name": "shop_backwall", "pos": [26, 0, -33], "size": [22, 2.2, 0.5], "colour": "concrete" },
+
+    { "name": "bank_counter", "pos": [-44, 0, 29], "size": [16, 1.15, 1.4], "colour": "concrete" },
+    { "name": "bank_divider", "pos": [-44, 0, 25.5], "size": [0.4, 1.1, 5], "colour": "metal" },
+
+    { "name": "bin_shop", "pos": [40, 0, -16], "size": [1.6, 1.3, 1.1], "colour": "metal" },
+    { "name": "bin_bank", "pos": [-56, 0, 16], "size": [1.6, 1.3, 1.1], "colour": "metal" },
+    { "name": "bin_main", "pos": [6, 0, 9], "size": [1.6, 1.3, 1.1], "colour": "metal" },
+    { "name": "dumpster_alley", "pos": [-30, 0, -9], "size": [3.2, 1.7, 1.6], "colour": "metal" }
+  ],
+
+  "terraces": [
+    { "name": "t_ne", "from": [12, 24], "to": [40, 24], "depth": 14, "unitWidth": 16, "minHeight": 4.5, "maxHeight": 7.5, "colour": "stucco", "capColour": "concrete" },
+    { "name": "t_ne2", "from": [50, 24], "to": [78, 24], "depth": 14, "unitWidth": 18, "minHeight": 5, "maxHeight": 8, "colour": "concrete", "capColour": "concrete" },
+    { "name": "t_sw", "from": [-36, -24], "to": [-12, -24], "depth": 14, "unitWidth": 16, "minHeight": 4.5, "maxHeight": 7, "colour": "stucco", "capColour": "concrete" },
+    { "name": "t_sw2", "from": [-78, -24], "to": [-50, -24], "depth": 14, "unitWidth": 18, "minHeight": 5, "maxHeight": 8.5, "colour": "metal", "capColour": "concrete" },
+    { "name": "t_se", "from": [50, -24], "to": [78, -24], "depth": 14, "unitWidth": 18, "minHeight": 4.5, "maxHeight": 7, "colour": "brick", "capColour": "concrete" },
+    { "name": "t_nw", "from": [-78, 24], "to": [-62, 24], "depth": 14, "unitWidth": 16, "minHeight": 5, "maxHeight": 7.5, "colour": "stucco", "capColour": "concrete" },
+    { "name": "t_far_s", "from": [-34, -56], "to": [34, -56], "depth": 14, "unitWidth": 18, "minHeight": 4.5, "maxHeight": 8, "colour": "metal", "capColour": "concrete" },
+    { "name": "t_far_n", "from": [-34, 56], "to": [34, 56], "depth": 14, "unitWidth": 18, "minHeight": 4.5, "maxHeight": 7.5, "colour": "stucco", "capColour": "concrete" },
+    { "name": "t_e_col", "from": [56, -50], "to": [56, -34], "depth": 14, "unitWidth": 16, "minHeight": 5, "maxHeight": 8, "colour": "concrete", "capColour": "concrete" },
+    { "name": "t_w_col", "from": [-56, -50], "to": [-56, -34], "depth": 14, "unitWidth": 16, "minHeight": 5, "maxHeight": 8, "colour": "brick", "capColour": "concrete" },
+    { "name": "t_e_col2", "from": [56, 34], "to": [56, 50], "depth": 14, "unitWidth": 16, "minHeight": 4.5, "maxHeight": 7, "colour": "stucco", "capColour": "concrete" }
+  ],
+
+  "buildings": [
+    {
+      "name": "house",
+      "note": "Ben's. Single storey, set back behind a patch of lawn nobody waters.",
+      "pos": [-16, 26],
+      "size": [14, 5, 12],
+      "colour": "stucco",
+      "door": { "at": [-16, 20], "facing": 0 }
+    },
+    {
+      "name": "shop",
+      "note": "The strip-mall grocery. Wide, flat, one storey, all frontage.",
+      "pos": [28, -26],
+      "size": [26, 6, 16],
+      "colour": "stucco",
+      "door": { "at": [28, -18], "facing": 0, "opensAt": 8, "closesAt": 20 },
+      "sign": { "width": 15, "colour": "#c9452f" }
+    },
+    {
+      "name": "bank",
+      "pos": [-44, 26],
+      "size": [22, 7, 16],
+      "colour": "concrete",
+      "door": { "at": [-44, 18], "facing": 0, "opensAt": 9, "closesAt": 17 },
+      "sign": { "width": 12, "colour": "#2f6ec9" }
+    }
+  ],
+
+  "fixtures": [
+    {
+      "type": "trigger",
+      "note": "Crossing the shop threshold.",
+      "pos": [28, 1.5, -19.5],
+      "size": [8, 3, 3],
+      "token": "shop.entered"
+    },
+    {
+      "type": "pickup",
+      "note": "The milk, on a shelf at the back.",
+      "pos": [36, 1.1, -30],
+      "size": [0.5, 0.8, 0.5],
+      "item": "milk",
+      "token": "milk.acquired",
+      "price": 3,
+      "colour": "#e8e6dc"
+    },
+    {
+      "type": "till",
+      "note": "Reads 'wait in line' until Ben is holding unpaid milk AND is actually next.",
+      "pos": [20, 1.5, -21.6],
+      "size": [3.4, 0.5, 0.6],
+      "item": "milk",
+      "price": 3,
+      "token": "shop.settled",
+      "idleVoice": "ben.queue.wait_long",
+      "colour": "wood",
+      "queue": {
+        "note": "Lane running back from the counter toward the door. Walk into it to join.",
+        "pos": [20, 1.0, -20.4],
+        "size": [2.6, 2.4, 7.5],
+        "direction": [0, 1],
+        "spacing": 1.2,
+        "service": 7.0,
+        "capacity": 6
+      }
+    },
+    {
+      "type": "shopexit",
+      "note": "Second route to shop.settled. Leaving unpaid costs notoriety, not money.",
+      "pos": [28, 1.5, -17],
+      "size": [8, 3, 2],
+      "witnesses": 2
+    },
+    {
+      "type": "trigger",
+      "note": "Crossing the bank threshold.",
+      "pos": [-44, 1.5, 19.5],
+      "size": [8, 3, 3],
+      "token": "bank.entered"
+    },
+    {
+      "type": "clerk",
+      "note": "The first clerk. Exists to hand over a form.",
+      "pos": [-50, 1.0, 31],
+      "size": [1.4, 1.8, 1.4],
+      "gives": "form",
+      "token": "bank.form_taken",
+      "voice": "npc.clerk.next",
+      "prompt": "ui.interact.talk",
+      "colour": "#8a8f9c"
+    },
+    {
+      "type": "clerk",
+      "note": "The second clerk. Will not act without the first clerk's form.",
+      "pos": [-38, 1.0, 31],
+      "size": [1.4, 1.8, 1.4],
+      "requires": "form",
+      "consumes": "form",
+      "pays": 240,
+      "token": "cheque.cashed",
+      "voice": "npc.clerk.next",
+      "refusal": "npc.clerk.form",
+      "prompt": "ui.interact.queue",
+      "colour": "#8a8f9c"
+    }
+  ]
+}

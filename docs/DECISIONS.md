@@ -4,6 +4,58 @@ Load-bearing choices and why they were made. Newest first.
 
 ---
 
+## ADR-010 — Design invariants are enforced by a headless test suite
+
+**2026-07-25 · Accepted**
+
+`godot --headless -- --run-tests` runs assertions over the rules that make the game what
+it is: both routes reach `shop.settled`, notoriety decays back to `Calm`, one witnessed
+kill is `Reported` and two are `Hunted`, Day 1 is completable with zero kills and zero
+notoriety, and every voice line has a subtitle in both languages.
+
+These are exactly the properties that break silently. A single-route shop still compiles,
+still boots, and still plays — it just quietly stops being this game. Nothing else in the
+pipeline would notice.
+
+Tests drive the **real nodes** (`Pickup`, `Till`, `ShopExit`, `Clerk`), not the systems
+underneath them. An earlier draft called `ErrandLog.Notify("shop.settled")` directly, which
+asserted that ErrandLog works and nothing at all about the shop. Verified by mutation:
+changing `ShopExit.CompletionToken` fails the suite with the exact expected message.
+
+The suite also probes the built world with physics shape queries and fails if any
+interactable — or Ben's spawn — sits inside solid geometry. That check exists because the
+first version of `DistrictBuilder` made every building a solid box, burying the milk, the
+till and both bank clerks inside massive cubes. Every other signal was green: it compiled,
+it imported, it booted, the tokens were wired, the errand logic was correct. Day 1 was
+simply impossible to finish, and nothing in the pipeline was looking at whether the world
+was walkable.
+
+**Cost:** the suite runs in the engine rather than a normal .NET test runner, so there is
+no per-test isolation and autoload state has to be reset by hand between cases. Accepted —
+the alternative is mocking Godot, which would test the mocks.
+
+---
+
+## ADR-009 — The district blockout is JSON, not a hand-authored scene
+
+**2026-07-25 · Accepted**
+
+`assets/district/day1.json` declares roads, buildings and fixtures; `DistrictBuilder`
+constructs the scene at load.
+
+A blockout authored as `.tscn` is ~40 nodes of raw transforms. It is unreadable in a diff,
+unmergeable between branches, and untunable without the editor open. As data the layout
+stays legible, and moving the shop two blocks over is a one-line change with a visible
+diff.
+
+The real payoff is the `fixtures` list. It holds the actual game logic — which token each
+volume emits, what the clerk demands, what the till settles — and it survives the art pass
+untouched when the grey boxes are replaced by authored geometry.
+
+**Cost:** no visual editing, and layout errors surface at runtime rather than in the editor.
+Mitigated by an invariant test asserting that every token Day 1 waits on is emitted by some
+fixture, so an unfinishable errand fails CI instead of shipping.
+
 ## ADR-008 — Sub-linear witness scaling for notoriety
 
 **2026-07-25 · Accepted**

@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cockpit</title>
+<!--
+  La coque du cockpit. Identique dans les 18 dépôts — source unique dans
+  0-AllMyPersoRepo/cockpit/, déployée par `python ops/cockpit.py deploy`.
+  NE PAS ÉDITER ICI : `ops/cockpit.py --check` refuse toute divergence.
+
+  Tout le contenu vient des JSON voisins. Un fichier absent cache son panneau
+  au lieu de le remplir de vide.
+-->
+<link rel="stylesheet" href="cockpit.css">
+
+<header>
+  <div class="brand">
+    <span class="dot"></span>
+    <h1 id="epic">—</h1>
+  </div>
+  <div class="hstats">
+    <span class="links" id="links"></span>
+    <span id="updated" class="k">—</span>
+  </div>
+</header>
+
+<main>
+
+  <section class="thesis">
+    <div class="shead">
+      <h2>Ce qu'on fait</h2>
+      <span class="note">et le chiffre qui dit si ça marche</span>
+    </div>
+    <p class="rule" id="goal"></p>
+    <p class="lede" id="narrative"></p>
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <section class="vision" id="vision-section" hidden>
+    <div class="shead">
+      <h2>Où ça va</h2>
+      <span class="note">un seul actif, plusieurs surfaces — chacune avec sa réserve</span>
+    </div>
+    <p class="thesis-line" id="vision-thesis"></p>
+    <p class="lede" id="vision-wedge"></p>
+    <div class="surfaces" id="vision-surfaces"></div>
+    <div class="flywheel" id="vision-flywheel"></div>
+    <p class="moat" id="vision-moat"></p>
+  </section>
+
+  <section id="proof-section" hidden>
+    <div class="shead">
+      <h2>Ce qui tient, et ce qui ne tient pas encore</h2>
+      <span class="note">chaque affirmation, avec ce qui la porte — ou ce qui lui manque</span>
+    </div>
+    <p class="proof__tally" id="proof-tally"></p>
+    <div class="proofs" id="proof-list"></div>
+  </section>
+
+  <section>
+    <div class="shead">
+      <h2>Feuille de route</h2>
+      <span class="note">un sprint par ligne · la position dit quand, le remplissage dit où on en est</span>
+    </div>
+    <div class="scroller" id="gantt"></div>
+    <div class="legend" id="gantt-legend"></div>
+  </section>
+
+  <section id="bench-section" hidden>
+    <div class="shead">
+      <h2>Mesures</h2>
+      <span class="note" id="bench-note"></span>
+      <span class="note" style="margin-left:auto" id="bench-updated"></span>
+    </div>
+    <div class="kpis" id="bench-summary" style="margin-bottom:14px"></div>
+    <div class="scroller"><table class="data" id="bench-table"></table></div>
+  </section>
+
+  <div class="split">
+    <section>
+      <div class="shead">
+        <h2>Journal</h2>
+        <span class="note">ce qui a été trouvé, et par quoi</span>
+      </div>
+      <div id="journal"></div>
+    </section>
+
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <section>
+        <div class="shead"><h2>Avancement</h2></div>
+        <p class="lede" id="focus"></p>
+        <div class="scroller" id="burnup"></div>
+      </section>
+      <section>
+        <div class="shead"><h2>La suite</h2></div>
+        <ul class="plain" id="next"></ul>
+      </section>
+    </div>
+  </div>
+
+  <section id="test-section" hidden>
+    <div class="shead">
+      <h2>Comment tester</h2>
+      <span class="note">ce qu'il y a à regarder, et dans quel ordre</span>
+    </div>
+    <div class="howto" id="test-steps"></div>
+  </section>
+
+  <section>
+    <div class="shead">
+      <h2>Carte système</h2>
+      <span class="note">les briques, et ce qu'elles prennent au cœur</span>
+      <span class="note" style="margin-left:auto"><span id="stack">—</span></span>
+    </div>
+    <p class="lede" id="system-summary"></p>
+    <div id="system"></div>
+    <div class="edges" id="edges"></div>
+  </section>
+
+  <section>
+    <div class="shead">
+      <h2>Réserve</h2>
+      <span class="note">pas planifié, pas oublié</span>
+    </div>
+    <ul class="plain" id="backlog"></ul>
+  </section>
+
+</main>
+
+<footer>
+  Piloté par <code>roadmap.json</code>, <code>changelog.json</code>, <code>system.json</code>, et selon le projet
+  <code>vision.json</code>, <code>bench.json</code>, <code>test.json</code>.
+  <code>etat.json</code> est <b>généré</b> — ne pas l'écrire à la main.
+  Un double-clic sur ce fichier donne une page vide : le navigateur refuse un <code>fetch</code> en <code>file://</code>, il faut le servir.
+</footer>
+
+<script src="app.js"></script>
+</html>

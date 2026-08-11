@@ -1,23 +1,23 @@
-PostalBen — licensing
-=====================
-
-This project uses two licenses: one for code, one for original creative assets.
-
-
-CODE — MIT License
-------------------
+All rights reserved.
 
 Copyright (c) 2026 Benoit Bacot
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This software and its source code are proprietary and confidential. No licence,
+express or implied, is granted to any person to use, copy, modify, merge,
+publish, distribute, sublicense, or sell copies of this software, in whole or in
+part, without the prior written permission of the copyright holder.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+LIKENESS AND VOICE.
+The voice recordings in this repository are a real person's voice and likeness.
+No licence over this repository grants any right to use, imitate, synthesise or
+redistribute them, and this restriction survives any other permission given
+here.
+
+THIRD-PARTY MATERIAL.
+This repository may include third-party material distributed under its own
+terms — engine code, libraries, and assets released under permissive or public
+domain licences such as CC0. Those terms are unaffected by this notice and
+nothing here supersedes them. Attribution files in the repository name them.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,37 +26,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-"Code" means everything under game/scripts/, tools/, dashboard/, and .github/.
-
-
-ASSETS — CC BY-NC 4.0
----------------------
-
-Original creative assets — models, textures, audio, voice recordings, written
-dialogue and design documents — are licensed under Creative Commons
-Attribution-NonCommercial 4.0 International.
-
-    https://creativecommons.org/licenses/by-nc/4.0/
-
-You are free to share and adapt them for non-commercial purposes with
-attribution. The voice recordings are a real person's likeness and voice;
-please treat them accordingly.
-
-"Assets" means everything under game/assets/, game/localization/, and docs/.
-
-
-THIRD PARTY
------------
-
-Godot Engine is licensed separately under the MIT License by the Godot Engine
-contributors. See https://godotengine.org/license
-
-
-NOTICE
-------
-
-PostalBen is an original work and a parody. It contains no code, assets, audio,
-text, characters, or trademarks from Postal, Postal 2, or any other product of
-Running With Scissors, Inc., and is neither affiliated with nor endorsed by
-them. Any resemblance in genre or tone is commentary and parody.

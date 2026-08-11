@@ -1,13 +1,21 @@
-[gd_scene load_steps=8 format=3 uid="uid://bpostalbenday1"]
+[gd_scene load_steps=10 format=3 uid="uid://bpostalbenday1"]
 
 [ext_resource type="Script" path="res://scripts/systems/Day1.cs" id="1_day1"]
 [ext_resource type="PackedScene" uid="uid://bpostalbenplayer" path="res://scenes/Ben.tscn" id="2_ben"]
+[ext_resource type="Script" path="res://scripts/world/DistrictBuilder.cs" id="3_district"]
+[ext_resource type="Script" path="res://scripts/ui/Hud.cs" id="4_hud"]
+[ext_resource type="Script" path="res://scripts/npc/Crowd.cs" id="5_crowd"]
+[ext_resource type="Script" path="res://scripts/npc/PoliceDispatch.cs" id="6_dispatch"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/ambience.wav" id="7_ambience"]
 
 [sub_resource type="ProceduralSkyMaterial" id="Sky_day1"]
-sky_top_color = Color(0.38, 0.45, 0.55, 1)
-sky_horizon_color = Color(0.72, 0.7, 0.62, 1)
-ground_bottom_color = Color(0.22, 0.22, 0.2, 1)
-ground_horizon_color = Color(0.72, 0.7, 0.62, 1)
+sky_top_color = Color(0.24, 0.42, 0.72, 1)
+sky_horizon_color = Color(0.92, 0.85, 0.68, 1)
+sky_curve = 0.16
+ground_bottom_color = Color(0.44, 0.35, 0.24, 1)
+ground_horizon_color = Color(0.92, 0.85, 0.68, 1)
+sun_angle_max = 26.0
+energy_multiplier = 1.25
 
 [sub_resource type="Sky" id="SkyRes_day1"]
 sky_material = SubResource("Sky_day1")
@@ -16,17 +24,25 @@ sky_material = SubResource("Sky_day1")
 background_mode = 2
 sky = SubResource("SkyRes_day1")
 ambient_light_source = 3
+ambient_light_sky_contribution = 0.85
 reflected_light_source = 2
-tonemap_mode = 2
+tonemap_mode = 3
+tonemap_white = 4.0
+ssao_enabled = true
+ssao_intensity = 1.6
+ssao_radius = 1.4
+ssil_enabled = false
+sdfgi_enabled = false
+glow_enabled = true
+glow_intensity = 0.35
+glow_bloom = 0.05
 fog_enabled = true
-fog_light_color = Color(0.72, 0.71, 0.65, 1)
-fog_density = 0.004
-
-[sub_resource type="BoxShape3D" id="GroundShape_day1"]
-size = Vector3(200, 1, 200)
-
-[sub_resource type="BoxMesh" id="GroundMesh_day1"]
-size = Vector3(200, 1, 200)
+fog_light_color = Color(0.9, 0.83, 0.66, 1)
+fog_density = 0.0028
+fog_sky_affect = 0.3
+adjustment_enabled = true
+adjustment_contrast = 1.1
+adjustment_saturation = 1.22
 
 [node name="Day1" type="Node3D"]
 script = ExtResource("1_day1")
@@ -35,23 +51,33 @@ script = ExtResource("1_day1")
 environment = SubResource("Env_day1")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.87, -0.34, 0.35, 0, 0.72, 0.69, -0.49, -0.6, 0.63, 0, 30, 0)
-light_energy = 1.1
+transform = Transform3D(0.79, -0.42, 0.45, 0, 0.73, 0.68, -0.61, -0.54, 0.58, 0, 40, 0)
+light_color = Color(1, 0.94, 0.83, 1)
+light_energy = 1.75
+light_angular_distance = 0.6
 shadow_enabled = true
-
-[node name="Ground" type="StaticBody3D" parent="."]
-collision_layer = 1
-collision_mask = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
-shape = SubResource("GroundShape_day1")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
-mesh = SubResource("GroundMesh_day1")
+shadow_bias = 0.04
+shadow_normal_bias = 1.5
+directional_shadow_mode = 2
+directional_shadow_max_distance = 180.0
 
 [node name="Ben" parent="." instance=ExtResource("2_ben")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+transform = Transform3D(-0.87, 0, -0.5, 0, 1, 0, 0.5, 0, -0.87, -16, 0.1, 14)
 
-[node name="Blockout" type="Node3D" parent="."]
+[node name="District" type="Node3D" parent="."]
+script = ExtResource("3_district")
+
+[node name="Crowd" type="Node3D" parent="."]
+script = ExtResource("5_crowd")
+
+[node name="PoliceDispatch" type="Node3D" parent="."]
+script = ExtResource("6_dispatch")
+
+[node name="Ambience" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_ambience")
+volume_db = -16.0
+autoplay = true
+bus = &"Ambience"
+
+[node name="Hud" type="CanvasLayer" parent="."]
+script = ExtResource("4_hud")

@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace PostalBen.Systems;
@@ -33,7 +34,29 @@ public partial class LocaleManager : Node
 
     public override void _Ready()
     {
-        Apply(LoadSavedLocale() ?? DetectSystemLocale());
+        // Priority: command line, then the player's saved choice, then the OS.
+        // The CLI override exists so a tester can check the other language without
+        // changing their Windows settings, and so CI can run the suite in both.
+        var fromCli = CommandLineLocale();
+
+        // A command-line override is for this run only - it must not overwrite the
+        // language the player picked in the menu.
+        Apply(fromCli ?? LoadSavedLocale() ?? DetectSystemLocale(), persist: fromCli is null);
+    }
+
+    /// <summary>Reads <c>--locale fr</c> (or <c>--locale=fr</c>) from the user args.</summary>
+    private static string? CommandLineLocale()
+    {
+        var args = OS.GetCmdlineUserArgs();
+        for (var i = 0; i < args.Length; i++)
+        {
+            if (args[i].StartsWith("--locale=", System.StringComparison.Ordinal))
+                return args[i]["--locale=".Length..];
+
+            if (args[i] == "--locale" && i + 1 < args.Length)
+                return args[i + 1];
+        }
+        return null;
     }
 
     /// <summary>
@@ -41,15 +64,18 @@ public partial class LocaleManager : Node
     /// Godot's notification, and in-flight voice lines finish in the old language
     /// rather than cutting out mid-word.
     /// </summary>
-    public void Apply(string locale)
+    public void Apply(string locale, bool persist = true)
     {
         locale = Normalize(locale);
         if (locale == Current && TranslationServer.GetLocale() == locale)
             return;
 
         Current = locale;
+        Culture = CultureInfo.GetCultureInfo(locale);
         TranslationServer.SetLocale(locale);
-        Persist(locale);
+
+        if (persist)
+            Persist(locale);
         EmitSignal(SignalName.LocaleChanged, locale);
         GD.Print($"[Locale] active language -> {locale}");
     }
@@ -67,6 +93,13 @@ public partial class LocaleManager : Node
 
     public LanguageOption CurrentOption =>
         Supported.First(l => l.Code == Current);
+
+    /// <summary>
+    /// Culture for formatting numbers and dates in UI text. Follows the *game* language,
+    /// not the OS: a French player on an English machine should see French number
+    /// formatting, and vice versa.
+    /// </summary>
+    public CultureInfo Culture { get; private set; } = CultureInfo.GetCultureInfo(FallbackLocale);
 
     private static string DetectSystemLocale() =>
         Normalize(OS.GetLocaleLanguage());

@@ -7,9 +7,10 @@
 
 ## Where we are
 
-**Sprint 1 — Foundations.** Engine, localization, audio and the core simulation systems.
-The project builds clean, boots headless, and loads Day 1 with both errands registered and
-subtitles firing in both languages.
+**Sprint 2 — The District.** Sprint 1 is closed. The district blockout, interaction system
+and world fixtures are in: Day 1's six completion tokens are all emitted by real objects,
+and the milk errand is completable by paying *or* by walking out without paying. A headless
+invariant suite (34 assertions) guards the design rules in CI.
 
 ## Sprint 1 — Foundations
 
@@ -27,8 +28,20 @@ subtitles firing in both languages.
 | 10 | Player controller | `game/scripts/player/BenController.cs` | ✅ Done — FP movement, sprint w/ stamina lockout, crouch with ceiling check, damage/death wired to VO |
 | 11 | Boot & Day 1 scenes | `game/scenes/{Boot,Ben,Day1}.tscn` | ✅ Done — boots headless, exit 0, both errands registered |
 | 12 | VO recording pipeline | `tools/*.ps1` | ✅ Done — sheet generator, EBU R128 normalizer, TTS placeholders, coverage reporter |
-| 13 | Dashboard | `dashboard/` | 🟡 In progress |
-| 14 | Public repo + CI | `.github/` | 🟡 In progress |
+| 13 | Dashboard | `dashboard/` | ✅ Done — Sprints/Gantt + VO coverage, deployed to Pages |
+| 14 | Public repo + CI | `.github/` | ✅ Done — 38 labels, 6 milestones, templates, green CI |
+
+## Sprint 2 — The District
+
+| # | Component | File(s) | State |
+|---|---|---|---|
+| 1 | District blockout | `game/assets/district/day1.json`, `scripts/world/DistrictBuilder.cs` | ✅ Done — 5 roads, 9 buildings, 7 fixtures, JSON-driven ([ADR-009](DECISIONS.md)). Buildings with a door are built as four walls around an empty interior; scenery stays solid |
+| 2 | Interaction system | `game/scripts/player/Interactor.cs`, `world/Interactable.cs` | ✅ Done — camera raycast on layer 6, localized prompt, occlusion-correct |
+| 3 | World fixtures | `game/scripts/world/{Pickup,Till,Clerk,Door,TokenTrigger,ShopExit}.cs` | ✅ Done — all six Day 1 tokens emitted by real objects |
+| 4 | Inventory | `game/scripts/systems/Inventory.cs` | ✅ Done — per-item paid/unpaid, which is what makes the theft route work |
+| 5 | HUD + errand log | `game/scripts/ui/Hud.cs` | ✅ Done — prompt, clock, money, notoriety, `J` panel, re-translates on locale change |
+| 6 | Invariant test suite | `game/scripts/test/TestRunner.cs` | ✅ Done — 34 assertions, wired into CI ([ADR-010](DECISIONS.md)) |
+| 7 | NPC AI | — | ⬜ Sprint 3 |
 
 ## Voice-over recording
 
@@ -41,12 +54,14 @@ Live numbers: `pwsh tools/Get-VoCoverage.ps1` → `dashboard/vo-coverage.json`.
 
 ## Backlog
 
-### Sprint 2 — The district
-- [ ] Blockout: house, shop, bank, park, connecting streets
-- [ ] Interaction system (raycast + prompt, `ui.hud.interact_prompt`)
-- [ ] Doors, pickups, tills, queue volumes
-- [ ] Wire Day 1 completion tokens to real world objects
-- [ ] Errand log UI (`J` key) with markers
+### Sprint 2 — The district *(done, pending playtest)*
+- [x] Blockout: house, shop, bank, park, connecting streets
+- [x] Interaction system (raycast + prompt, `ui.hud.interact_prompt`)
+- [x] Doors, pickups, tills, clerk counters
+- [x] Wire Day 1 completion tokens to real world objects
+- [x] Errand log UI (`J` key)
+- [ ] World markers on errand stages (`Stage.MarkerPosition` is populated but unrendered)
+- [ ] Human playtest — everything above is verified headless, nobody has walked it yet
 
 ### Sprint 3 — People
 - [ ] NPC base: navmesh, daily schedule, personal space
@@ -83,7 +98,15 @@ Recorded because "it builds" and "it runs" are different claims:
 
 - `dotnet build PostalBen.csproj` — **0 warnings, 0 errors** (warnings-as-errors on)
 - `godot --headless --import` — **no errors**, both CSVs compile to `.translation`
-- `godot --headless --quit-after 60` — **exit 0**; locale resolves, Boot loads Day 1, both
-  errands register, VO falls back to subtitle-only as designed
+- `godot --headless --quit-after 120` — **exit 0**; district builds (5 roads, 9 buildings,
+  7 fixtures), both errands register, VO falls back to subtitle-only as designed
+- `godot --headless -- --run-tests` — **43/43 assertions pass, exit 0**
+- Test suite mutation-checked twice, so it is not vacuous:
+  - breaking `ShopExit.CompletionToken` → exit 1, `FAIL walking out with the milk should complete the errand`
+  - reverting buildings to solid boxes → exit 1, four `is inside solid geometry` failures
+    naming the exact unreachable fixtures
 - `tools/Build-VoSheet.ps1` — 53 lines × 2 locales, correct UTF-8 output
 - `tools/Get-VoCoverage.ps1` — runs under pwsh 7, writes `vo-coverage.json`
+
+**Not verified:** nobody has played it with a mouse and keyboard yet. Movement feel,
+prompt placement, whether the shop is a sensible walk away — all unknown.
