@@ -85,6 +85,7 @@ public partial class Till : Interactable
         }
 
         Inv.MarkPaid(Item);
+        GetNode<Audio.Sfx>("/root/Sfx").PlayAt("till", GlobalPosition, -4f);
         Errands(this).Notify(CompletionToken);
     }
 }

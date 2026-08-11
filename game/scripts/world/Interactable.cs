@@ -45,6 +45,8 @@ public abstract partial class Interactable : StaticBody3D
         if (!CanInteract())
             return;
 
+        GetNode<Audio.Sfx>("/root/Sfx").PlayAt("interact", GlobalPosition, -10f);
+
         OnInteract();
         EmitSignal(SignalName.Interacted);
     }

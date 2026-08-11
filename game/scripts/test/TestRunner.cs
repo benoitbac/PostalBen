@@ -40,6 +40,7 @@ public partial class TestRunner : Node3D
         RunSafely(nameof(CorpsesStopBehavingLikePeople), CorpsesStopBehavingLikePeople);
         RunSafely(nameof(BeingArrestedEndsTheDayWithoutKillingBen), BeingArrestedEndsTheDayWithoutKillingBen);
         RunSafely(nameof(GoreSettingIsHonoured), GoreSettingIsHonoured);
+        RunSafely(nameof(EverySoundEffectExists), EverySoundEffectExists);
         RunSafely(nameof(DistrictLayoutCoversEveryDayOneToken), DistrictLayoutCoversEveryDayOneToken);
 
         RunSafely(nameof(QueueSlotsAreOrderedAwayFromTheCounter), QueueSlotsAreOrderedAwayFromTheCounter);
@@ -523,6 +524,36 @@ public partial class TestRunner : Node3D
             "later slots should be further from the counter");
 
         queue.QueueFree();
+    }
+
+    /// <summary>
+    /// Every sound effect the code asks for must exist on disk.
+    ///
+    /// A missing effect fails silently at runtime - the game just goes quiet in one
+    /// place, in a way nobody notices until someone plays with headphones on. The ids
+    /// are string literals scattered across the codebase, so this is the only thing
+    /// that would catch a typo.
+    /// </summary>
+    private void EverySoundEffectExists()
+    {
+        // Kept in step with the PlayAt/Play call sites by hand; there are few enough
+        // that a list beats reflection over string literals.
+        var required = new[]
+        {
+            "step_1", "step_2", "step_3", "step_4",
+            "gunshot", "swing", "impact", "bodyfall",
+            "interact", "till", "ambience",
+        };
+
+        foreach (var id in required)
+        {
+            var path = $"res://assets/audio/sfx/{id}.wav";
+            Check(ResourceLoader.Exists(path), $"sound effect '{id}' is missing at {path}");
+        }
+
+        // And the loader must actually hand back a stream, not just report the file.
+        var probe = GD.Load<AudioStream>("res://assets/audio/sfx/gunshot.wav");
+        Check(probe is not null, "gunshot.wav should load as an AudioStream");
     }
 
     /// <summary>

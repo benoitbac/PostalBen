@@ -133,6 +133,7 @@ public partial class Npc : CharacterBody3D
         Velocity = Vector3.Zero;
 
         World.Gore.Pool(this);
+        GetNode<Audio.Sfx>("/root/Sfx").PlayAt("bodyfall", GlobalPosition, -3f);
 
         if (_body is null)
             return;

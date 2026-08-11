@@ -160,7 +160,38 @@ public partial class BenController : CharacterBody3D
 
         Velocity = velocity;
         MoveAndSlide();
+
+        UpdateFootsteps(speed, dt);
     }
+
+    /// <summary>
+    /// Steps are driven by distance travelled, not by a timer, so the cadence follows
+    /// the speed automatically and a player edging forward does not machine-gun.
+    /// </summary>
+    private void UpdateFootsteps(float speed, float dt)
+    {
+        if (!IsOnFloor())
+        {
+            _strideDistance = 0f;
+            return;
+        }
+
+        var travelled = new Vector3(Velocity.X, 0f, Velocity.Z).Length() * dt;
+        if (travelled < 0.001f)
+            return;
+
+        _strideDistance += travelled;
+
+        var stride = IsCrouching ? 1.05f : speed > WalkSpeed + 0.1f ? 2.1f : 1.6f;
+        if (_strideDistance < stride)
+            return;
+
+        _strideDistance = 0f;
+        GetNode<Audio.Sfx>("/root/Sfx")
+            .PlayVariantAt("step", 4, GlobalPosition, IsCrouching ? -14f : -8f);
+    }
+
+    private float _strideDistance;
 
     private void UpdateCrouch()
     {

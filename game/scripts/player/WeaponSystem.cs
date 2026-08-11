@@ -153,6 +153,8 @@ public partial class WeaponSystem : Node3D
         // Police read this to tell resisting apart from surrendering.
         _ben?.NotifyAttacked();
 
+        var sfx = GetNode<Audio.Sfx>("/root/Sfx");
+
         if (Held.Kind == Kind.Firearm)
         {
             if (Held.Loaded <= 0)
@@ -164,14 +166,21 @@ public partial class WeaponSystem : Node3D
             Held.Loaded--;
             EmitSignal(SignalName.AmmoChanged, Held.Loaded, Held.Spare);
             Flash();
+            sfx.PlayAt("gunshot", GlobalPosition, 2f);
 
             // A gunshot is heard whether or not it hits anything.
             _notoriety.Report(NotorietySystem.Incident.GunshotFired, GlobalPosition, WitnessCount());
+        }
+        else
+        {
+            sfx.PlayAt("swing", GlobalPosition, -6f);
         }
 
         var hit = Probe();
         if (hit is null)
             return;
+
+        sfx.PlayAt("impact", hit.GlobalPosition + Vector3.Up, -2f);
 
         var wasAlive = !hit.IsDead;
         hit.TakeDamage(Held.Damage, GlobalPosition);
