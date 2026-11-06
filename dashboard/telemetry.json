@@ -50,8 +50,26 @@
       "docs": 10,
       "tasksDone": 0,
       "conformity": 60
+    },
+    {
+      "date": "2026-08-11",
+      "commits": 20,
+      "dirty": 1,
+      "files": 42,
+      "docs": 10,
+      "tasksDone": 0,
+      "conformity": 70
+    },
+    {
+      "date": "2026-08-17",
+      "commits": 20,
+      "dirty": 2,
+      "files": 42,
+      "docs": 10,
+      "tasksDone": 0,
+      "conformity": 70
     }
   ],
-  "updated": "2026-08-10",
+  "updated": "2026-08-17",
   "note": "un point par jour, mesuré — jamais saisi. Les séries propres au projet viennent de son ops/telemetry.json."
 }

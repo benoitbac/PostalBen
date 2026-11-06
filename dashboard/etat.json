@@ -1,11 +1,11 @@
 {
   "repo": "PostalBen",
-  "generated": "2026-08-11 00:30",
+  "generated": "2026-08-11 15:24",
   "staleDays": 0,
   "facts": [
     {
       "label": "commits",
-      "value": "19",
+      "value": "20",
       "state": "good",
       "source": "git rev-list --count --all"
     },
@@ -17,8 +17,8 @@
     },
     {
       "label": "non commité",
-      "value": "12",
-      "state": "warn",
+      "value": "0",
+      "state": "good",
       "source": "git status --porcelain"
     },
     {
@@ -58,7 +58,7 @@
         },
         {
           "k": "commits, toutes branches",
-          "v": "19",
+          "v": "20",
           "src": "git rev-list --count --all"
         },
         {
@@ -68,8 +68,8 @@
         },
         {
           "k": "fichiers modifiés non commités",
-          "v": "12",
-          "s": "warn",
+          "v": "0",
+          "s": "good",
           "src": "git status --porcelain"
         },
         {
