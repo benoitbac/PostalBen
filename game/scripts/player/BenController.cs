@@ -46,11 +46,35 @@ public partial class BenController : CharacterBody3D
     public bool IsDead { get; private set; }
     public bool IsCrouching { get; private set; }
 
+    /// <summary>Taken into custody. Movement is over for the day.</summary>
+    public bool IsDetained { get; private set; }
+
+    /// <summary>
+    /// Time since Ben last swung or fired. Police read this to tell the difference
+    /// between someone resisting and someone who has stopped.
+    /// </summary>
+    public float SecondsSinceAttack { get; private set; } = 999f;
+
+    public void NotifyAttacked() => SecondsSinceAttack = 0f;
+
+    public void Detain()
+    {
+        if (IsDetained)
+            return;
+
+        IsDetained = true;
+        Velocity = Vector3.Zero;
+        Input.MouseMode = Input.MouseModeEnum.Visible;
+    }
+
     private Node3D _head = null!;
     private Camera3D _camera = null!;
     private CollisionShape3D _collider = null!;
     private bool _sprintLocked;
     private float _standHeight;
+
+    /// <summary>Mouse-motion events discarded on startup. See _UnhandledInput.</summary>
+    private int _settleFrames = 3;
 
     private const float CrouchHeight = 1.1f;
 
@@ -74,6 +98,16 @@ public partial class BenController : CharacterBody3D
         if (IsDead)
             return;
 
+        // The first motion event after the window grabs the cursor carries the whole
+        // distance from wherever the pointer happened to be, which snaps the view to a
+        // random direction on startup. Swallow input until the cursor has settled.
+        if (_settleFrames > 0)
+        {
+            if (@event is InputEventMouseMotion)
+                _settleFrames--;
+            return;
+        }
+
         if (@event is InputEventMouseMotion motion && Input.MouseMode == Input.MouseModeEnum.Captured)
         {
             RotateY(-motion.Relative.X * MouseSensitivity);
@@ -95,7 +129,9 @@ public partial class BenController : CharacterBody3D
 
     public override void _PhysicsProcess(double delta)
     {
-        if (IsDead)
+        SecondsSinceAttack += (float)delta;
+
+        if (IsDead || IsDetained)
             return;
 
         var dt = (float)delta;
@@ -124,7 +160,38 @@ public partial class BenController : CharacterBody3D
 
         Velocity = velocity;
         MoveAndSlide();
+
+        UpdateFootsteps(speed, dt);
     }
+
+    /// <summary>
+    /// Steps are driven by distance travelled, not by a timer, so the cadence follows
+    /// the speed automatically and a player edging forward does not machine-gun.
+    /// </summary>
+    private void UpdateFootsteps(float speed, float dt)
+    {
+        if (!IsOnFloor())
+        {
+            _strideDistance = 0f;
+            return;
+        }
+
+        var travelled = new Vector3(Velocity.X, 0f, Velocity.Z).Length() * dt;
+        if (travelled < 0.001f)
+            return;
+
+        _strideDistance += travelled;
+
+        var stride = IsCrouching ? 1.05f : speed > WalkSpeed + 0.1f ? 2.1f : 1.6f;
+        if (_strideDistance < stride)
+            return;
+
+        _strideDistance = 0f;
+        GetNode<Audio.Sfx>("/root/Sfx")
+            .PlayVariantAt("step", 4, GlobalPosition, IsCrouching ? -14f : -8f);
+    }
+
+    private float _strideDistance;
 
     private void UpdateCrouch()
     {

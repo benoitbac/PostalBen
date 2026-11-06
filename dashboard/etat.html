@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>où on en est</title>
+<!--
+  La page « état de l'art » côté projet : ce qui est livré, ce qui est mesuré,
+  ce qui ne tient pas encore. Rendue depuis etat.json, qui est GÉNÉRÉ par
+  `python ops/cockpit.py etat` — chaque ligne porte la commande qui la produit.
+
+  Rien ici n'est écrit à la main. Un chiffre recopié est un chiffre qui vieillit
+  en silence, et c'est exactement ce qu'on cherche à supprimer.
+
+  Coque identique dans les 18 dépôts. NE PAS ÉDITER ICI.
+-->
+<link rel="stylesheet" href="cockpit.css">
+
+<header>
+  <div class="brand">
+    <span class="dot"></span>
+    <h1 id="title">Où on en est</h1>
+  </div>
+  <div class="hstats">
+    <span class="links" id="links"></span>
+    <span id="updated" class="k">—</span>
+  </div>
+</header>
+
+<main>
+  <section class="thesis">
+    <div class="shead">
+      <h2>D'un coup d'œil</h2>
+      <span class="note">tout vient d'une commande, rien d'une estimation</span>
+    </div>
+    <p class="stale" id="stale" hidden></p>
+    <div class="kpis" id="facts"></div>
+  </section>
+
+  <div id="groups" style="display:flex;flex-direction:column;gap:24px"></div>
+
+  <section id="gaps-section" hidden>
+    <div class="shead">
+      <h2>Ce que cette page ne dit pas</h2>
+      <span class="note">les trous, au même niveau de détail que le reste</span>
+    </div>
+    <ul class="plain" id="gaps"></ul>
+  </section>
+
+  <div id="empty"></div>
+</main>
+
+<footer>
+  Page générée par <code>python ops/cockpit.py etat</code> depuis le dépôt lui-même, à chaque session.
+  Chaque ligne porte la commande qui la produit — si tu ne peux pas la rejouer, c'est un défaut, pas un détail.
+</footer>
+
+<script src="etat.js"></script>
+</html>

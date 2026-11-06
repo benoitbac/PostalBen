@@ -1,0 +1,26 @@
+{
+  "summary": "À ÉCRIRE — aucune commande ne donne ça.",
+  "stack": "À ÉCRIRE — aucune commande ne donne ça.",
+  "layers": [
+    {
+      "name": "Dossiers",
+      "desc": "relevés à la racine du dépôt",
+      "bricks": [
+        {
+          "title": "game",
+          "path": "game/",
+          "role": "358 fichier(s). À ÉCRIRE — aucune commande ne donne ça.",
+          "ports": []
+        },
+        {
+          "title": "tools",
+          "path": "tools/",
+          "role": "9 fichier(s). À ÉCRIRE — aucune commande ne donne ça.",
+          "ports": []
+        }
+      ]
+    }
+  ],
+  "edges": [],
+  "_seed": "Briques = dossiers réels du dépôt. Leur rôle et les arêtes entre elles restent à écrire — aucune commande ne les donne."
+}

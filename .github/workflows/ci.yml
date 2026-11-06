@@ -76,6 +76,13 @@ jobs:
         working-directory: game
         run: godot --headless --quit-after 120
 
+      # Asserts the design invariants that are easy to break silently: both routes to
+      # shop.settled, notoriety decay, the one-kill-is-not-a-manhunt threshold, and a
+      # subtitle for every voice line in both languages. Exits non-zero on failure.
+      - name: Invariant tests
+        working-directory: game
+        run: godot --headless -- --run-tests
+
   localization:
     name: Localization integrity
     runs-on: windows-latest

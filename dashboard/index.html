@@ -1,183 +1,147 @@
 <!doctype html>
-<html lang="en">
-<head>
+<html lang="fr">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PostalBen — Dashboard</title>
-<style>
-  :root {
-    --bg: #14150f;
-    --panel: #1c1e16;
-    --panel-2: #23261c;
-    --line: #34382a;
-    --ink: #e8e6dc;
-    --muted: #9b9c8c;
-    --accent: #c9a227;
-    --done: #6f9e4c;
-    --active: #d9a441;
-    --todo: #4a4e3c;
-    --danger: #b4553f;
-    --radius: 10px;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font: 15px/1.55 ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
-  }
-  header {
-    padding: 28px 32px 20px;
-    border-bottom: 1px solid var(--line);
-    background: linear-gradient(180deg, #1b1d14, var(--bg));
-  }
-  h1 { margin: 0; font-size: 30px; letter-spacing: -0.5px; }
-  h1 span { color: var(--accent); }
-  .tagline { color: var(--muted); margin-top: 6px; font-size: 14px; }
-  .meta { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; }
-  .chip {
-    background: var(--panel-2); border: 1px solid var(--line);
-    padding: 4px 11px; border-radius: 999px; color: var(--muted);
-  }
-  .chip b { color: var(--ink); font-weight: 600; }
-  nav { display: flex; gap: 4px; padding: 0 32px; border-bottom: 1px solid var(--line); }
-  nav button {
-    background: none; border: 0; border-bottom: 2px solid transparent;
-    color: var(--muted); padding: 13px 16px; font-size: 14px; cursor: pointer;
-    font-family: inherit;
-  }
-  nav button:hover { color: var(--ink); }
-  nav button.on { color: var(--accent); border-bottom-color: var(--accent); }
-  main { padding: 26px 32px 60px; max-width: 1400px; }
-  section { display: none; }
-  section.on { display: block; }
-  h2 { font-size: 15px; text-transform: uppercase; letter-spacing: 1.2px;
-       color: var(--muted); margin: 30px 0 14px; font-weight: 600; }
-  h2:first-child { margin-top: 0; }
+<title>cockpit</title>
+<!--
+  La coque du cockpit. Identique dans les 18 dépôts — source unique dans
+  0-AllMyPersoRepo/cockpit/, déployée par `python ops/cockpit.py deploy`.
+  NE PAS ÉDITER ICI : `ops/cockpit.py --check` refuse toute divergence.
 
-  /* Gantt */
-  .gantt { border: 1px solid var(--line); border-radius: var(--radius);
-           overflow-x: auto; background: var(--panel); }
-  .gantt table { border-collapse: collapse; width: 100%; min-width: 720px; }
-  .gantt th { font-size: 11px; text-transform: uppercase; letter-spacing: .8px;
-              color: var(--muted); text-align: left; padding: 11px 14px;
-              border-bottom: 1px solid var(--line); font-weight: 600; }
-  .gantt td { padding: 9px 14px; border-bottom: 1px solid #262920; vertical-align: middle; }
-  .gantt tr:last-child td { border-bottom: 0; }
-  .gantt .sname { font-weight: 600; white-space: nowrap; }
-  .gantt .sid { color: var(--accent); font-variant-numeric: tabular-nums;
-                margin-right: 8px; font-weight: 700; }
-  .track { position: relative; height: 22px; background: #191b13;
-           border-radius: 5px; min-width: 340px; }
-  .bar { position: absolute; top: 3px; height: 16px; border-radius: 4px;
-         display: flex; align-items: center; padding: 0 8px;
-         font-size: 11px; font-weight: 700; white-space: nowrap; }
-  .bar.done   { background: var(--done); }
-  .bar.active { background: var(--active); }
-  .bar.planned{ background: var(--todo); }
-  .bar-pct { font-size: 11px; font-weight: 700; white-space: nowrap; }
-  .bar-pct.inside  { color: #14150f; }
-  .bar-pct.outside { position: absolute; top: 4px; color: var(--active); }
-  .today { position: absolute; top: -3px; bottom: -3px; width: 2px;
-           background: var(--danger); }
+  Tout le contenu vient des JSON voisins. Un fichier absent cache son panneau
+  au lieu de le remplir de vide.
+-->
+<link rel="stylesheet" href="cockpit.css">
 
-  /* Sprint cards */
-  .cards { display: grid; gap: 16px;
-           grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
-  .card { background: var(--panel); border: 1px solid var(--line);
-          border-radius: var(--radius); padding: 18px; }
-  .card.is-active { border-color: var(--accent); }
-  .card h3 { margin: 0 0 3px; font-size: 17px; }
-  .card h3 em { color: var(--accent); font-style: normal; margin-right: 7px; }
-  .card .goal { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
-  .prog { height: 5px; background: #191b13; border-radius: 3px;
-          overflow: hidden; margin-bottom: 14px; }
-  .prog i { display: block; height: 100%; background: var(--done); }
-  ul.items { list-style: none; margin: 0; padding: 0; }
-  ul.items li { display: flex; gap: 9px; padding: 5px 0; font-size: 13.5px;
-                align-items: flex-start; }
-  .dot { width: 9px; height: 9px; border-radius: 50%; margin-top: 6px;
-         flex: 0 0 9px; background: var(--todo); }
-  .dot.done { background: var(--done); }
-  .dot.active { background: var(--active); }
-  .it-note { color: var(--muted); font-size: 12px; }
-  .strike { color: var(--muted); }
-
-  /* VO */
-  .vo-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
-  .vo-card { background: var(--panel); border: 1px solid var(--line);
-             border-radius: var(--radius); padding: 20px; }
-  .vo-card h3 { margin: 0 0 12px; font-size: 18px; display: flex;
-                justify-content: space-between; align-items: baseline; }
-  .vo-pct { font-size: 26px; font-weight: 700; color: var(--accent);
-            font-variant-numeric: tabular-nums; }
-  /* Border and lighter track so an empty bar reads as "nothing recorded yet"
-     rather than as a failed render. */
-  .vo-bar { height: 10px; background: #0f100b; border: 1px solid var(--line);
-            border-radius: 5px; overflow: hidden; display: flex;
-            margin-bottom: 12px; }
-  .vo-bar i.rec  { background: var(--done); }
-  .vo-bar i.stub { background: var(--todo); }
-  .vo-legend { display: flex; gap: 16px; font-size: 12px; color: var(--muted);
-               flex-wrap: wrap; }
-  .vo-legend span::before { content: ''; display: inline-block; width: 9px;
-    height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: baseline; }
-  .l-rec::before  { background: var(--done); }
-  .l-stub::before { background: var(--todo); }
-  .l-miss::before { background: #191b13; border: 1px solid var(--line); }
-  table.spk { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px; }
-  table.spk th { text-align: left; color: var(--muted); font-weight: 600;
-                 font-size: 11px; text-transform: uppercase; letter-spacing: .7px;
-                 padding-bottom: 7px; }
-  table.spk td { padding: 5px 0; border-top: 1px solid #262920; }
-  table.spk td:last-child { text-align: right; font-variant-numeric: tabular-nums;
-                            color: var(--muted); }
-  .warn { background: #2a1e17; border: 1px solid var(--danger); color: #eab9a8;
-          padding: 12px 15px; border-radius: var(--radius); margin-top: 16px;
-          font-size: 13px; }
-  .empty { color: var(--muted); font-style: italic; }
-  footer { padding: 24px 32px; border-top: 1px solid var(--line);
-           color: var(--muted); font-size: 12.5px; }
-  footer a { color: var(--accent); }
-  code { background: var(--panel-2); padding: 1px 5px; border-radius: 4px;
-         font-size: 12px; }
-  @media (max-width: 640px) {
-    header, nav, main, footer { padding-left: 18px; padding-right: 18px; }
-  }
-</style>
-</head>
-<body>
 <header>
-  <h1>Postal<span>Ben</span></h1>
-  <div class="tagline" id="tagline">Loading…</div>
-  <div class="meta" id="meta"></div>
+  <div class="brand">
+    <span class="dot"></span>
+    <h1 id="epic">—</h1>
+  </div>
+  <div class="hstats">
+    <span class="links" id="links"></span>
+    <span id="updated" class="k">—</span>
+  </div>
 </header>
 
-<nav>
-  <button data-view="sprints" class="on">Sprints</button>
-  <button data-view="vo">Voice-over</button>
-</nav>
-
 <main>
-  <section id="view-sprints" class="on">
-    <h2>Timeline</h2>
-    <div class="gantt" id="gantt"></div>
-    <h2>Sprints</h2>
-    <div class="cards" id="cards"></div>
+
+  <section class="thesis">
+    <div class="shead">
+      <h2>Ce qu'on fait</h2>
+      <span class="note">et le chiffre qui dit si ça marche</span>
+    </div>
+    <p class="rule" id="goal"></p>
+    <p class="lede" id="narrative"></p>
+    <div class="kpis" id="kpis"></div>
   </section>
 
-  <section id="view-vo">
-    <h2>Recording coverage</h2>
-    <div class="vo-grid" id="vo"></div>
+  <section class="vision" id="vision-section" hidden>
+    <div class="shead">
+      <h2>Où ça va</h2>
+      <span class="note">un seul actif, plusieurs surfaces — chacune avec sa réserve</span>
+    </div>
+    <p class="thesis-line" id="vision-thesis"></p>
+    <p class="lede" id="vision-wedge"></p>
+    <div class="surfaces" id="vision-surfaces"></div>
+    <div class="flywheel" id="vision-flywheel"></div>
+    <p class="moat" id="vision-moat"></p>
   </section>
+
+  <section id="proof-section" hidden>
+    <div class="shead">
+      <h2>Ce qui tient, et ce qui ne tient pas encore</h2>
+      <span class="note">chaque affirmation, avec ce qui la porte — ou ce qui lui manque</span>
+    </div>
+    <p class="proof__tally" id="proof-tally"></p>
+    <div class="proofs" id="proof-list"></div>
+  </section>
+
+  <section>
+    <div class="shead">
+      <h2>Feuille de route</h2>
+      <span class="note">un sprint par ligne · la position dit quand, le remplissage dit où on en est</span>
+    </div>
+    <div class="scroller" id="gantt"></div>
+    <div class="legend" id="gantt-legend"></div>
+  </section>
+
+  <section id="bench-section" hidden>
+    <div class="shead">
+      <h2>Mesures</h2>
+      <span class="note" id="bench-note"></span>
+      <span class="note" style="margin-left:auto" id="bench-updated"></span>
+    </div>
+    <div class="kpis" id="bench-summary" style="margin-bottom:14px"></div>
+    <div class="scroller"><table class="data" id="bench-table"></table></div>
+  </section>
+
+  <div class="split">
+    <section>
+      <div class="shead">
+        <h2>Journal</h2>
+        <span class="note">ce qui a été trouvé, et par quoi</span>
+      </div>
+      <div id="journal"></div>
+    </section>
+
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <section>
+        <div class="shead"><h2>Avancement</h2></div>
+        <p class="lede" id="focus"></p>
+        <div class="scroller" id="burnup"></div>
+      </section>
+      <section>
+        <div class="shead"><h2>La suite</h2></div>
+        <ul class="plain" id="next"></ul>
+      </section>
+    </div>
+  </div>
+
+  <section id="telemetry-section" hidden>
+    <div class="shead">
+      <h2>Télémétrie</h2>
+      <span class="note">ce que le projet devient, jour après jour · un point par jour, mesuré</span>
+      <span class="note" style="margin-left:auto" id="telemetry-span"></span>
+    </div>
+    <div class="sparks" id="telemetry"></div>
+  </section>
+
+  <section id="test-section" hidden>
+    <div class="shead">
+      <h2>Comment tester</h2>
+      <span class="note">ce qu'il y a à regarder, et dans quel ordre</span>
+    </div>
+    <div class="howto" id="test-steps"></div>
+  </section>
+
+  <section>
+    <div class="shead">
+      <h2>Carte système</h2>
+      <span class="note">les briques, et ce qu'elles prennent au cœur</span>
+      <span class="note" style="margin-left:auto"><span id="stack">—</span></span>
+    </div>
+    <p class="lede" id="system-summary"></p>
+    <div id="system"></div>
+    <div class="edges" id="edges"></div>
+  </section>
+
+  <section>
+    <div class="shead">
+      <h2>Réserve</h2>
+      <span class="note">pas planifié, pas oublié</span>
+    </div>
+    <ul class="plain" id="backlog"></ul>
+  </section>
+
 </main>
 
 <footer>
-  Generated from <code>dashboard/roadmap.json</code> and <code>dashboard/vo-coverage.json</code>.
-  Refresh coverage with <code>pwsh tools/Get-VoCoverage.ps1</code>.
-  &nbsp;·&nbsp; <a href="https://github.com/benoitbac/PostalBen">Repository</a>
+  Piloté par <code>roadmap.json</code>, <code>changelog.json</code>, <code>system.json</code>, et selon le projet
+  <code>vision.json</code>, <code>bench.json</code>, <code>test.json</code>.
+  <code>etat.json</code> est <b>généré</b> — ne pas l'écrire à la main.
+  Un double-clic sur ce fichier donne une page vide : le navigateur refuse un <code>fetch</code> en <code>file://</code>, il faut le servir.
 </footer>
 
 <script src="app.js"></script>
-</body>
 </html>

@@ -19,6 +19,7 @@ public partial class Day1 : Node3D
 
         _errands.ClearForNewDay();
         GetNode<NotorietySystem>("/root/Notoriety").Reset();
+        GetNode<Inventory>("/root/Inventory").ClearForNewDay();
 
         foreach (var errand in BuildErrands())
             _errands.Add(errand);
